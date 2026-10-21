@@ -8,12 +8,14 @@ import { FORMATION_IDS, getFormation, type FormationId } from './lib/formations'
 import { exportSvgToPng } from './lib/exportPng';
 import {
   adaptLineup,
+  canExport,
   clearAll,
   clearSlot,
   emptyLineup,
   filledCount,
   isComplete,
   place,
+  remainingCount,
   type Lineup,
 } from './lib/squad';
 
@@ -34,6 +36,8 @@ export default function App() {
   const selectedSlot = formation.slots.find((slot) => slot.id === selectedSlotId);
   const filled = filledCount(lineup);
   const complete = isComplete(lineup);
+  const exportable = canExport(lineup);
+  const remaining = remainingCount(lineup);
 
   function handleFormationChange(nextId: FormationId) {
     if (nextId === formationId) return;
@@ -70,7 +74,7 @@ export default function App() {
   }
 
   async function handleExport() {
-    if (!svgRef.current) return;
+    if (!svgRef.current || !exportable) return;
     setBusy(true);
     setError(null);
     try {
@@ -101,7 +105,13 @@ export default function App() {
           type="button"
           className="btn btn--primary"
           onClick={() => void handleExport()}
-          disabled={busy}
+          disabled={busy || !exportable}
+          title={
+            exportable
+              ? undefined
+              : `Complète ton XI pour exporter (encore ${String(remaining)} joueur${remaining > 1 ? 's' : ''})`
+          }
+          aria-describedby={exportable ? undefined : 'export-hint'}
         >
           <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
             <path
@@ -181,6 +191,7 @@ export default function App() {
             lineup={lineup}
             filled={filled}
             complete={complete}
+            remaining={remaining}
             onSelectSlot={handleSelectSlot}
             onReset={handleReset}
           />

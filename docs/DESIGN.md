@@ -126,7 +126,9 @@ du SVG : les cartes des latéraux débordent légèrement de la ligne de touche,
 56 px, `--surface`, filet bas. À gauche la marque : carré 22 px aux couleurs du maillot « Hechter »
 (marine, liseré blanc, bande rouge, en dégradé de tokens — ce n'est pas un logo officiel), le nom en
 650 et le sous-titre muted séparé par un filet (masqué sous 900 px). À droite, le seul bouton
-principal de l'écran : « Exporter en PNG » avec icône de téléchargement.
+principal de l'écran : « Exporter en PNG » avec icône de téléchargement. Désactivé tant que le
+onze n'est pas complet, relié par `aria-describedby` à la consigne de la feuille de match
+(`#export-hint`, « Encore n joueurs avant l’export. »).
 
 ### Sélecteur de schéma
 
@@ -243,7 +245,7 @@ monogramme.
 | Slot vide               | terrain : pointillés, « Libre » ; feuille : avatar pointillé, « Choisir un joueur » |
 | Slot sélectionné        | bordure rouge 4 px sur le terrain, sélecteur ouvert, pastille de poste rouge        |
 | Slot rempli             | carte pleine, nom + époque, bouton « Retirer » dans le sélecteur                    |
-| XI incomplet            | `n/11 titulaires`, segments remplis en `--text`, export possible                    |
+| XI incomplet            | `n/11 titulaires`, segments en `--text`, export **désactivé** (« Encore n joueurs avant l’export. ») |
 | XI complet              | `11/11 XI complet` en vert, 11 segments verts, « XI complet — prêt à exporter. »    |
 | Poste sans candidat     | « Aucun joueur disponible pour ce poste. »                                          |
 | Recherche sans résultat | « Aucun joueur ne correspond à « … » pour ce poste. »                               |

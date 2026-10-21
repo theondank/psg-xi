@@ -12,7 +12,7 @@
 | F6 | Panneau de sélection | Clic sur une carte ou une ligne → liste des éligibles (avatar, postes, nationalité, époque), recherche insensible à la casse et aux accents, compteur de disponibilité ; `Échap` ou « Feuille de match » ferme |
 | F7 | Retrait et réinitialisation | « Retirer » vide le slot courant ; « Réinitialiser » vide les 11 et ferme le panneau |
 | F8 | Progression | Compteur `n/11` + 11 segments ; état vert `11/11 XI complet`, message « prêt à exporter » |
-| F9 | Export PNG | Le clic produit un fichier 2000 × 2960 nommé `mon-xi-psg-<schéma>.png`, avec tous les noms lisibles |
+| F9 | Export PNG | **Disponible seulement à 11/11** (`canExport`, testé) : avant, le bouton est désactivé, son `title` et la consigne de la feuille de match disent combien de joueurs manquent. Le clic produit un fichier 2000 × 2960 nommé `mon-xi-psg-<schéma>.png`, avec tous les noms lisibles |
 | F10 | Clavier | Chaque carte est focusable, Entrée/Espace ouvre le sélecteur, `aria-label` explicite |
 | F11 | Responsive | Aucun débordement horizontal à 1440, 900 et 390 px ; le terrain tient au-dessus de la ligne de flottaison en desktop ; sous 900 px le sélecteur s'ouvre en bottom sheet (voile cliquable pour fermer) |
 | F12 | Erreur d'export | Un échec de conversion affiche un bandeau `role="alert"` au lieu d'échouer en silence |

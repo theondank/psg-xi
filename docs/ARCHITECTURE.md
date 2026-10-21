@@ -73,8 +73,11 @@ silencieusement un joueur compatible, et jamais on ne duplique un joueur.
 ### 4. Complétude
 
 `filledCount` compte les valeurs non `null` ; `isComplete` vérifie que **les 11** slots sont remplis.
-Le compteur de progression, le message de fin et le bouton d'export s'appuient dessus — l'export reste possible à 10/11
-(choix produit : une image partielle est parfois ce qu'on veut).
+Le compteur de progression et le message de fin s'appuient dessus. `canExport` (= `isComplete`)
+verrouille l'export : **pas de PNG avant 11/11** (choix produit du 2026-10-21 : l'image part telle
+quelle sur les réseaux, un onze à trous n'est pas une compo qu'on défend). `remainingCount` donne le
+nombre de slots libres affiché dans la consigne. `handleExport` revérifie `canExport` : le bouton
+désactivé n'est pas la seule garde.
 
 ## Pipeline d'export PNG
 

@@ -8,6 +8,7 @@ interface MatchSheetProps {
   readonly lineup: Lineup;
   readonly filled: number;
   readonly complete: boolean;
+  readonly remaining: number;
   readonly onSelectSlot: (slotId: string) => void;
   readonly onReset: () => void;
 }
@@ -19,6 +20,7 @@ export function MatchSheet({
   lineup,
   filled,
   complete,
+  remaining,
   onSelectSlot,
   onReset,
 }: MatchSheetProps) {
@@ -99,10 +101,12 @@ export function MatchSheet({
       </div>
 
       <footer className="sheet__foot">
-        <p className="sheet__status">
+        <p id="export-hint" className="sheet__status">
           {complete
             ? 'XI complet — prêt à exporter.'
-            : 'Clique sur un poste pour choisir un joueur.'}
+            : filled === 0
+              ? 'Clique sur un poste pour choisir un joueur. L’export s’ouvre à 11/11.'
+              : `Encore ${String(remaining)} joueur${remaining > 1 ? 's' : ''} avant l’export.`}
         </p>
         <button type="button" className="btn btn--quiet" onClick={onReset} disabled={filled === 0}>
           Réinitialiser

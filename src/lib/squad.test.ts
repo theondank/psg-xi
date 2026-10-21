@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getFormation } from './formations';
 import {
   adaptLineup,
+  canExport,
   clearAll,
   clearSlot,
   eligiblePlayers,
@@ -11,6 +12,7 @@ import {
   matchesQuery,
   place,
   playerAt,
+  remainingCount,
   slotOfPlayer,
   type Lineup,
 } from './squad';
@@ -140,6 +142,35 @@ describe('complétude', () => {
     expect(filledCount(lineup)).toBe(11);
     expect(isComplete(lineup)).toBe(true);
     expect(slotOfPlayer(lineup, 'cavani')).toBe('st');
+  });
+});
+
+describe('export', () => {
+  it('refuse un onze vide', () => {
+    const lineup = emptyLineup(formation);
+    expect(canExport(lineup)).toBe(false);
+    expect(remainingCount(lineup)).toBe(11);
+  });
+
+  it('refuse un onze à 10/11 : une image partielle ne part pas', () => {
+    let lineup = emptyLineup(formation);
+    for (const slot of formation.slots.slice(0, 10)) {
+      const candidate = eligiblePlayers(lineup, slot).at(0);
+      if (candidate) lineup = place(lineup, formation, slot.id, candidate.id);
+    }
+    expect(filledCount(lineup)).toBe(10);
+    expect(canExport(lineup)).toBe(false);
+    expect(remainingCount(lineup)).toBe(1);
+  });
+
+  it('autorise un onze complet', () => {
+    let lineup = emptyLineup(formation);
+    for (const slot of formation.slots) {
+      const candidate = eligiblePlayers(lineup, slot).at(0);
+      if (candidate) lineup = place(lineup, formation, slot.id, candidate.id);
+    }
+    expect(canExport(lineup)).toBe(true);
+    expect(remainingCount(lineup)).toBe(0);
   });
 });
 

@@ -34,7 +34,12 @@ export function slotOfPlayer(lineup: Lineup, playerId: string): string | null {
  * - renvoie le lineup inchangé si l'opération est invalide (pas d'exception :
  *   l'UI ne peut pas casser l'état).
  */
-export function place(lineup: Lineup, formation: Formation, slotId: string, playerId: string): Lineup {
+export function place(
+  lineup: Lineup,
+  formation: Formation,
+  slotId: string,
+  playerId: string,
+): Lineup {
   const targetSlot = findSlot(formation, slotId);
   const player = PLAYERS_BY_ID.get(playerId);
   if (!targetSlot || !player || !isEligible(targetSlot, player)) return lineup;
@@ -64,8 +69,14 @@ export function clearAll(lineup: Lineup): Lineup {
 }
 
 /** Joueurs sélectionnables pour un slot : bon poste et pas déjà titulaire ailleurs. */
-export function eligiblePlayers(lineup: Lineup, slot: Slot, roster: readonly Player[] = PLAYERS): Player[] {
-  return roster.filter((player) => isEligible(slot, player) && slotOfPlayer(lineup, player.id) === null);
+export function eligiblePlayers(
+  lineup: Lineup,
+  slot: Slot,
+  roster: readonly Player[] = PLAYERS,
+): Player[] {
+  return roster.filter(
+    (player) => isEligible(slot, player) && slotOfPlayer(lineup, player.id) === null,
+  );
 }
 
 export function filledCount(lineup: Lineup): number {
@@ -74,6 +85,19 @@ export function filledCount(lineup: Lineup): number {
 
 export function isComplete(lineup: Lineup): boolean {
   return Object.values(lineup).every((playerId) => playerId !== null);
+}
+
+/** Slots encore libres avant de pouvoir exporter. */
+export function remainingCount(lineup: Lineup): number {
+  return Object.values(lineup).length - filledCount(lineup);
+}
+
+/**
+ * L'image n'est exportable qu'à 11/11 : le PNG part tel quel sur les réseaux, un onze à trous
+ * n'est pas une compo qu'on défend.
+ */
+export function canExport(lineup: Lineup): boolean {
+  return isComplete(lineup);
 }
 
 /** Recherche insensible à la casse et aux accents approximatifs. */
