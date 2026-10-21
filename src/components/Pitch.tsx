@@ -2,6 +2,7 @@ import type { Ref } from 'react';
 import { eraLabel, shortName, type Player } from '../data/players';
 import type { Formation, Slot } from '../lib/formations';
 import { playerAt, type Lineup } from '../lib/squad';
+import { avatarColor, initials } from '../lib/avatar';
 
 /** Dimensions du terrain dans l'espace SVG (ratio proche d'un vrai terrain). */
 const W = 1000;
@@ -80,34 +81,57 @@ function PlayerCard({
         strokeWidth={selected ? 4 : 2}
         strokeDasharray={player ? undefined : '10 8'}
       />
+      <circle
+        cx={cx - CARD_W / 2 + 30}
+        cy={cy}
+        r={24}
+        fill={player ? avatarColor(player.id) : 'transparent'}
+        stroke={selected ? COLORS.accent : player ? COLORS.cardStroke : COLORS.muted}
+        strokeWidth={2}
+        strokeDasharray={player ? undefined : '6 5'}
+      />
+      {player ? (
+        <text
+          x={cx - CARD_W / 2 + 30}
+          y={cy + 6}
+          fill={COLORS.text}
+          fontSize={18}
+          fontWeight={700}
+          textAnchor="middle"
+          fontFamily="system-ui, -apple-system, Segoe UI, sans-serif"
+        >
+          {initials(player.name)}
+        </text>
+      ) : null}
       <text
-        x={cx - CARD_W / 2 + 12}
+        x={cx + CARD_W / 2 - 12}
         y={cy - CARD_H / 2 + 22}
         fill={COLORS.muted}
         fontSize={15}
         fontFamily="system-ui, -apple-system, Segoe UI, sans-serif"
         letterSpacing={1.2}
+        textAnchor="end"
       >
         {slot.label}
       </text>
       <text
-        x={cx}
-        y={cy + 6}
+        x={cx - CARD_W / 2 + 62}
+        y={cy - 1}
         fill={player ? COLORS.text : COLORS.muted}
-        fontSize={player ? 26 : 20}
+        fontSize={player ? 21 : 20}
         fontWeight={player ? 600 : 500}
-        textAnchor="middle"
+        textAnchor="start"
         fontFamily="system-ui, -apple-system, Segoe UI, sans-serif"
       >
         {player ? shortName(player) : 'Libre'}
       </text>
       {player ? (
         <text
-          x={cx}
-          y={cy + 30}
+          x={cx - CARD_W / 2 + 62}
+          y={cy + 22}
           fill={COLORS.muted}
-          fontSize={15}
-          textAnchor="middle"
+          fontSize={14}
+          textAnchor="start"
           fontFamily="system-ui, -apple-system, Segoe UI, sans-serif"
         >
           {eraLabel(player)}

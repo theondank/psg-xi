@@ -16,6 +16,7 @@
 | F10 | Clavier | Chaque carte est focusable, Entrée/Espace ouvre le sélecteur, `aria-label` explicite |
 | F11 | Responsive | Aucun débordement horizontal à 1440, 900 et 390 px ; le terrain tient au-dessus de la ligne de flottaison en desktop |
 | F12 | Erreur d'export | Un échec de conversion affiche un bandeau `role="alert"` au lieu d'échouer en silence |
+| F13 | Avatars monogrammes | Chaque carte porte un médaillon : initiales sans diacritique + couleur déterministe issue de l'id ; identique à l'écran et dans le PNG |
 
 Rien de tout cela ne dépend du réseau : l'app démarre et fonctionne hors ligne après chargement.
 
@@ -47,7 +48,7 @@ Effort : **S** ≈ moins d'une heure, **M** ≈ une demi-journée, **L** ≈ une
 | Sujet | La question | Pourquoi ce n'est pas à l'agent de décider |
 | --- | --- | --- |
 | Notation des joueurs | Note par poste ? Par siècle ? Par utilisateur ? | C'est une opinion : il faut dire qui note et sur quelle base, sinon l'app invente une vérité |
-| Photos de joueurs | Ajouter des portraits | Droits à l'image : à arbitrer avant toute intégration, et l'export PNG devient dépendant d'images externes |
+| Photos de joueurs | Remplacer le monogramme par de vrais portraits | Deux voies mesurées dans `docs/DESIGN.md` (« Portraits réels ») : CDN API-Sports (200 + CORS `*` sans clé, mais droits d'usage à vérifier) ou portraits Wikimedia (licences à tracer). Arbitrage juridique + choix de la source avant tout code |
 | Comparaison avec un onze réel | Confronter la compo à un onze aligné une saison donnée | Demande une source de compositions officielles : périmètre et effort à valider |
 | Thème clair | Proposer deux thèmes | L'export est sombre : un thème clair crée deux rendus à maintenir pour un gain discutable |
 

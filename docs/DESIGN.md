@@ -80,23 +80,51 @@ et un fond translucide (`rgba(13,42,92,.35)`).
 
 ### Carte de joueur (SVG, `Pitch.tsx`)
 
-Rect 220 × 72, rayon 14, 4 lignes de texte :
+Rect 220 × 72, rayon 14. À gauche, un médaillon d'avatar ; à droite, nom et époque alignés à gauche ;
+poste en haut à droite, aligné à droite.
 
 ```
-┌──────────────────────────────┐
-│ LB                           │  poste, 15 px, muted, letter-spacing 1,2
-│          Maxwell             │  nom court, 26 px, 600, centré
-│         2012-2017            │  époque, 15 px, muted, centrée
-└──────────────────────────────┘
+┌────────────────────────────────┐
+│                        LB      │  poste, 15 px, muted, ancré à droite
+│  ╭──╮                          │
+│  │KM│  Kylian Mbappé           │  initiales 18 px (700), nom 21 px (600)
+│  ╰──╯  2017-2024               │  époque 14 px, muted
+└────────────────────────────────┘
 ```
 
-- Slot vide : bordure pointillée `10 8`, fond translucide, texte « Libre » en 20 px muted.
-- Slot sélectionné : bordure `accent`, épaisseur 4 (au lieu de 2).
+- Médaillon : cercle r=24 centré à 30 unités du bord gauche. Fond = `avatarColor(player.id)`
+  (déterministe, cf. ci-dessous), initiales = `initials(player.name)` (18 px, 700, sans diacritique :
+  « Ángel Di María » → « AM », « Ronaldinho » → « RO »).
+- Palette d'avatar : `AVATAR_PALETTE` dans `lib/avatar.ts` (5 teintes du design system, dont le
+  rouge). La couleur est un **hachage de l'id**, jamais un aléatoire : deux exports du même onze
+  produisent la même image. Deux joueurs peuvent partager une teinte et des initiales (Maxwell et
+  Marquinhos → « MA ») : le nom complet reste la référence.
+- Zone de nom : de +62 à +98 (≈148 unités). Nom le plus long de l'effectif : « Donnarumma » ≈
+  115 unités à 21 px — la marge est réelle mais faible : **ne pas monter au-dessus de 21 px** sans
+  élargir la carte.
+- Slot vide : médaillon en pointillés `6 5` sans initiales, nom « Libre », époque absente.
+- Slot sélectionné : bordure `accent`, épaisseur 4 (au lieu de 2), sur la carte **et** le médaillon.
 - Zone cliquable : le `<g>` entier, `role="button"`, `tabIndex={0}`, `aria-label` explicite
   (« LB : Maxwell, retirer ou remplacer » / « Choisir un CB »), activation Entrée et Espace.
-- Le nom est **réduit** par `shortName()` (voir `docs/DATA.md`) : c'est la seule protection contre
-  les débordements. Vérifier Kvaratskhelia, Donnarumma, Ibrahimović, Di María après toute
-  modification de taille de carte ou de police.
+- Le nom est **réduit** par `shortName()` (voir `docs/DATA.md`).
+
+### Portraits réels : état des lieux (2026-10)
+
+Un monogramme n'est pas un visage. Les deux voies vers de vraies photos, avec leurs faits mesurés :
+
+1. **CDN d'API-Sports** (`media.api-sports.io/football/players/<id>.png`) : HTTP 200, `image/png`,
+   CORS `*` — techniquement intégrable et exportable sans clé. **Mais** l'usage des photos est
+   régi par leurs conditions (compte requis pour leur API de données) : le droit d'utiliser le CDN
+   sans abonnement est à vérifier avant tout code. La dépendance réseau et la pérennité des URLs
+   sont deux autres risques.
+2. **Portraits Wikimedia Commons** (licences CC BY-SA / domaine public, CORS `*`) : aucune clé,
+   mais ~87 fichiers à sourcer, licences à tracer (`CREDITS.md`) et attribution à embarquer dans
+   l'export PNG.
+
+En attendant l'arbitrage, le SVG n'embarque **aucune image externe** (contrainte d'export, cf.
+« Contraintes d'export ») et le monogramme tient lieu de visage. Le point d'insertion prévu est
+`lib/avatar.ts` : remplacer la couleur par un mapping `id → URL d'image` dans un composant dédié,
+sans toucher à `Pitch.tsx`.
 
 ### Chip de schéma
 

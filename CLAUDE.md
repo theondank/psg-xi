@@ -55,8 +55,8 @@ Flux : `PLAYERS` → `eligiblePlayers(lineup, slot)` → liste du `Picker` → `
    `formations.ts`, les tests de `formations.test.ts` et `docs/DATA.md`.
 6. **Styles SVG en attributs de présentation, jamais en classes CSS.** Le PNG est produit en
    clonant le SVG dans un Blob : la feuille de style de l'app ne s'y applique pas. Couleurs SVG :
-   la constante `COLORS` de `Pitch.tsx`. Couleurs de l'interface : variables CSS de `styles.css`.
-   Aucun code hexadécimal ailleurs.
+   la constante `COLORS` de `Pitch.tsx` et `AVATAR_PALETTE` de `lib/avatar.ts`. Couleurs de
+   l'interface : variables CSS de `styles.css`. Aucun code hexadécimal ailleurs.
 7. **Terrain : viewBox `1000 × 1480`, ratio 0,676.** La largeur du conteneur est plafonnée par la
    hauteur d'écran (`max-width: min(580px, calc((100vh - 230px) * 0.676))`) pour que le gardien
    reste au-dessus de la ligne de flottaison. Toute modification du viewBox impose de recalculer
