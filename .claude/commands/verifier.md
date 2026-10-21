@@ -12,7 +12,7 @@ Vérifie le dépôt et rapporte **la sortie réelle**, pas une conclusion.
 Si l'interface a changé, ajoute le parcours navigateur :
 
 5. `npm run preview -- --port 4173` en tâche de fond, puis remplis un onze complet et vérifie le
-   badge `11/11 · XI complet`, ouvre le sélecteur sur un slot, change de schéma, et clique
+   compteur `11/11 XI complet`, ouvre le sélecteur sur un slot, change de schéma, et clique
    « Exporter en PNG » : le fichier produit doit faire 2000 × 2960.
 
 Si une étape échoue : corrige, relance l'étape, et ne déclare jamais un succès sans sa sortie.

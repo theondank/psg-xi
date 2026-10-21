@@ -4,20 +4,22 @@
 
 | # | Fonctionnalité | Critère d'acceptation |
 | --- | --- | --- |
-| F1 | Quatre schémas tactiques | Le clic sur un chip change le terrain en gardant les joueurs compatibles, sans doublon |
+| F1 | Quatre schémas tactiques | Le clic sur un segment du sélecteur de schéma change le terrain en gardant les joueurs compatibles, sans doublon |
 | F2 | Effectif de 87 joueurs (1974 → aujourd'hui) | Chaque fiche a un id unique, une période cohérente, au moins un poste valide |
 | F3 | Éligibilité par poste | Un slot n'affiche que les joueurs dont un poste est accepté par ce slot |
 | F4 | Placement avec échange | Déplacer un titulaire libère son slot ; l'occupant échange s'il peut jouer à l'ancienne place, sinon il repart au banc |
 | F5 | Changement de schéma sans perte | 11/11 en 4-3-3 → au moins 9/11 en 4-4-2, aucun joueur dupliqué, aucun joueur incompatible conservé |
-| F6 | Panneau de sélection | Clic sur une carte → liste des éligibles, recherche insensible à la casse et aux accents, compteur de disponibilité |
+| F6 | Panneau de sélection | Clic sur une carte ou une ligne → liste des éligibles (avatar, postes, nationalité, époque), recherche insensible à la casse et aux accents, compteur de disponibilité ; `Échap` ou « Feuille de match » ferme |
 | F7 | Retrait et réinitialisation | « Retirer » vide le slot courant ; « Réinitialiser » vide les 11 et ferme le panneau |
-| F8 | Progression | Badge `n/11`, état vert `11/11 · XI complet`, message « prêt à exporter » |
+| F8 | Progression | Compteur `n/11` + 11 segments ; état vert `11/11 XI complet`, message « prêt à exporter » |
 | F9 | Export PNG | Le clic produit un fichier 2000 × 2960 nommé `mon-xi-psg-<schéma>.png`, avec tous les noms lisibles |
 | F10 | Clavier | Chaque carte est focusable, Entrée/Espace ouvre le sélecteur, `aria-label` explicite |
-| F11 | Responsive | Aucun débordement horizontal à 1440, 900 et 390 px ; le terrain tient au-dessus de la ligne de flottaison en desktop |
+| F11 | Responsive | Aucun débordement horizontal à 1440, 900 et 390 px ; le terrain tient au-dessus de la ligne de flottaison en desktop ; sous 900 px le sélecteur s'ouvre en bottom sheet (voile cliquable pour fermer) |
 | F12 | Erreur d'export | Un échec de conversion affiche un bandeau `role="alert"` au lieu d'échouer en silence |
 | F13 | Avatars monogrammes | Chaque carte porte un médaillon : initiales sans diacritique + couleur déterministe issue de l'id ; identique à l'écran et dans le PNG |
 | F14 | Pipeline portraits | Si un joueur a une URL dans `src/data/photos.ts`, son portrait s'affiche dans le médaillon et se retrouve dans le PNG exporté ; en cas d'absence, d'échec réseau ou de CORS refusé, le monogramme reste (aucune image cassée) |
+| F15 | Feuille de match | Au repos, le panneau liste les 11 slots groupés Gardien / Défense / Milieu / Attaque (`slotsByLine`, testé), chaque ligne de gauche à droite |
+| F16 | Thème clair / sombre | L'interface suit `prefers-color-scheme` ; police Geist servie depuis `public/fonts/`, sans appel réseau. Le terrain reste sombre pour l'instant (suivi du thème : prochaine étape) |
 
 Sauf F14 (portraits chargés à la demande depuis le CDN), rien de tout cela ne dépend du réseau :
 l'app démarre et fonctionne hors ligne après chargement.
@@ -53,7 +55,7 @@ Effort : **S** ≈ moins d'une heure, **M** ≈ une demi-journée, **L** ≈ une
 | Notation des joueurs | Note par poste ? Par siècle ? Par utilisateur ? | C'est une opinion : il faut dire qui note et sur quelle base, sinon l'app invente une vérité |
 | Photos de joueurs | Remplacer le monogramme par de vrais portraits | **Tranché** : CDN API-Sports. Le pipeline est en place (F14) ; il ne manque que la clé api-sports.io pour générer la table des ids (`scripts/fetch-photo-ids.mjs`) |
 | Comparaison avec un onze réel | Confronter la compo à un onze aligné une saison donnée | Demande une source de compositions officielles : périmètre et effort à valider |
-| Thème clair | Proposer deux thèmes | L'export est sombre : un thème clair crée deux rendus à maintenir pour un gain discutable |
+| Terrain en thème clair | Le terrain et le PNG suivent le thème (décision prise le 2026-10-21) | Deux rendus d'export à tester ; traité dans la passe « terrain » |
 
 ## Non-objectifs assumés
 

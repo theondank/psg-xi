@@ -1,7 +1,11 @@
 # Design system
 
-Interface sombre, un seul écran, trois zones : barre d'actions, terrain, panneau latéral. L'objectif
-visuel n'est pas « site de club » mais **tableau tactique** : le terrain domine, le reste s'efface.
+Un seul écran, au niveau de finition des apps sport officielles : une barre de marque, la scène du
+terrain, et une **feuille de match** en panneau d'outil pleine hauteur. Thème clair ou sombre selon
+l'OS (`prefers-color-scheme`). Le terrain domine, l'interface est un outil neutre autour de lui.
+
+Ce qu'on refuse (anciennes dérives) : fond bleu nuit avec halo lumineux, boîtes arrondies imbriquées,
+typo sans voix, barre d'actions où tout se dispute l'attention.
 
 ## Principes
 
@@ -10,73 +14,148 @@ visuel n'est pas « site de club » mais **tableau tactique** : le terrain domin
 2. **Deux palettes, deux rôles.** Le SVG porte ses propres couleurs (`COLORS` dans `Pitch.tsx`) parce
    qu'il doit survivre à l'export PNG ; l'interface utilise les variables CSS de `styles.css`.
    Ne pas mélanger : une couleur de carte joueur ne se règle pas dans `styles.css`.
-3. **Le rouge est un accent, pas une action.** Le rouge PSG (`#da291c`) marque la sélection et
-   l'export, jamais une action destructrice (celle-ci est grise + texte clair : `--danger-text`).
-4. **Aucune couleur littérale dans un `.tsx`** (hors `COLORS`) et aucune dans `styles.css` hors
-   `:root` et dégradés. Une nouvelle couleur solide devient un token.
+3. **Neutres + un accent.** L'interface est en gris froids ; le rouge PSG (`#da291c`) marque
+   uniquement l'action principale (export) et la sélection (poste en cours). Jamais une action
+   destructrice : celle-ci est bordée neutre, texte `--danger-text`.
+4. **Chaque action près de ce qu'elle modifie.** Export dans la barre de marque ; schéma tactique
+   au-dessus du terrain ; progression et réinitialisation dans la feuille de match.
+5. **Filets et aplats plutôt que cartes.** Les zones se séparent par une bordure de 1 px et un
+   changement de surface, pas par des panneaux flottants. Aucune carte dans une carte.
+6. **Aucune couleur littérale dans un `.tsx`** (hors `COLORS` et `AVATAR_PALETTE`) et aucune dans
+   `styles.css` hors `:root` et dégradés. Une nouvelle couleur solide devient un token.
 
 ## Tokens
 
 ### Interface (`:root` de `styles.css`)
 
-| Token | Valeur | Usage |
-| --- | --- | --- |
-| `--bg` | `#030a1a` | fond de page (avec un halo radial `#0a2450`) |
-| `--bg-elevated` | `#071228` | surfaces : barre, panneaux, cartes d'UI |
-| `--bg-input` | `#040c1e` | champs de saisie (recherche) |
-| `--border` | `#1d3563` | bordures, séparateurs |
-| `--text` | `#f2f6ff` | texte principal |
-| `--muted` | `#8ba3cf` | texte secondaire, libellés de poste, métadonnées |
-| `--accent` | `#da291c` | rouge PSG : sélection, bouton d'export |
-| `--accent-soft` | `rgba(218,41,28,.14)` | fond d'alerte / de rappel |
-| `--blue` | `#1b4b9c` | bleu PSG : état actif, focus |
-| `--ok` | `#2fbf71` | état « XI complet » |
+Les tokens existent en deux jeux : `:root` (clair) et `@media (prefers-color-scheme: dark)`.
 
-Valeurs dérivées assumées (écrites localement, pas des tokens) : `#ef3a2c` (survol du bouton
-principal), `#ff9b92` (texte destructif), `rgba(27,75,156,.25)` (survol d'une ligne de joueur),
-`rgba(255,255,255,.05)` (voile de survol), `rgba(47,191,113,.12/.35)` (fond/bordure « complet »).
+| Token                             | Clair      | Sombre      | Usage                                                           |
+| --------------------------------- | ---------- | ----------- | --------------------------------------------------------------- |
+| `--bg`                            | `#f3f4f6`  | `#0e0f11`   | fond de la scène du terrain                                     |
+| `--surface`                       | `#ffffff`  | `#16171a`   | barre de marque, panneau, champ de recherche                    |
+| `--surface-2`                     | `#f5f6f8`  | `#1d1f22`   | survol d'une ligne ou d'un bouton discret                       |
+| `--surface-3`                     | `#eceef1`  | `#25272b`   | pastilles de poste, rail du sélecteur de schéma, segments vides |
+| `--border`                        | `#e3e5e9`  | `#2a2c31`   | filets, séparateurs, bordures de contrôles                      |
+| `--border-strong`                 | `#cdd1d8`  | `#3b3e45`   | survol de bordure, avatar vide en pointillés                    |
+| `--text`                          | `#101215`  | `#f2f3f5`   | texte principal, segments de progression remplis                |
+| `--text-2`                        | `#3b4049`  | `#c8cbd1`   | texte de contrôle secondaire                                    |
+| `--muted`                         | `#626873`  | `#9297a1`   | métadonnées, libellés, placeholders                             |
+| `--accent`                        | `#da291c`  | `#da291c`   | rouge PSG : export, poste sélectionné                           |
+| `--accent-hover`                  | `#c02014`  | `#ea3a2c`   | survol du bouton principal                                      |
+| `--accent-soft` / `--accent-line` | 8 % / 35 % | 16 % / 45 % | fond et bordure d'alerte, joueur titulaire dans la liste        |
+| `--danger-text`                   | `#b42318`  | `#ff8b80`   | texte du bouton « Retirer »                                     |
+| `--navy`                          | `#004170`  | `#004170`   | bleu PSG, uniquement dans la marque                             |
+| `--focus` / `--focus-soft`        | `#1f5fc4`  | `#7aa7ff`   | anneau de focus clavier                                         |
+| `--ok`                            | `#12804a`  | `#3fcf83`   | état « XI complet »                                             |
+| `--seg-on`                        | `#ffffff`  | `#34373d`   | segment actif du sélecteur de schéma                            |
+
+Ombres : `--shadow-sm` (segment actif), `--shadow-pitch` (le terrain, seul objet en relief),
+`--shadow-sheet` (bottom sheet mobile). Toutes ont un décalage vertical, aucune lueur colorée.
 
 ### Terrain (`COLORS` de `Pitch.tsx`)
 
-| Clé | Valeur | Usage |
-| --- | --- | --- |
-| `background` | `#040f26` | fond du SVG |
-| `stripe` | `#0a1f45` | bandes alternées (5 sur 10) |
-| `line` | `#c9d6f2` | lignes du terrain, opacité 0,75 |
-| `cardFill` | `#123468` | carte d'un joueur placé |
-| `cardStroke` | `#3a63ad` | bordure d'une carte remplie |
-| `accent` | `#da291c` | bordure d'un slot sélectionné |
-| `text` | `#f4f7ff` | nom du joueur |
-| `muted` | `#8ba3cf` | poste, époque, « Libre » |
+| Clé          | Valeur    | Usage                           |
+| ------------ | --------- | ------------------------------- |
+| `background` | `#040f26` | fond du SVG                     |
+| `stripe`     | `#0a1f45` | bandes alternées (5 sur 10)     |
+| `line`       | `#c9d6f2` | lignes du terrain, opacité 0,75 |
+| `cardFill`   | `#123468` | carte d'un joueur placé         |
+| `cardStroke` | `#3a63ad` | bordure d'une carte remplie     |
+| `accent`     | `#da291c` | bordure d'un slot sélectionné   |
+| `text`       | `#f4f7ff` | nom du joueur                   |
+| `muted`      | `#8ba3cf` | poste, époque, « Libre »        |
 
 Ces huit clés sont la seule source de couleur du terrain. Un slot vide utilise `muted` en pointillés
-et un fond translucide (`rgba(13,42,92,.35)`).
+et un fond translucide (`rgba(13,42,92,.35)`). Le terrain ne suit pas encore le thème : c'est la
+prochaine étape (décision prise : en mode clair, le terrain et le PNG passeront en clair).
 
 ## Typographie
 
-- Famille unique : `system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`. **Obligatoire dans le
-  SVG** : une webfont ne serait pas disponible dans le contexte image de l'export.
-- Échelle UI : `1.35rem` titre de page · `1.3rem` titre de panneau · `1.05rem` sous-titre ·
-  `0.9rem` nom de joueur · `0.85rem` boutons · `0.82rem` badge, méta · `0.72rem` pied de page,
-  métadonnées · `0.7rem` libellés d'eyebrow (letter-spacing 1,6 px).
+- **Interface : Geist** (Vercel, licence OFL), fichier variable auto-hébergé
+  `public/fonts/Geist-Variable.woff2` (69 Ko, graisses 100–900) avec sa licence `public/fonts/OFL.txt`.
+  Aucun appel réseau : le fichier est servi avec l'app. Repli : pile système.
+- **SVG : pile système obligatoire** (`system-ui, -apple-system, Segoe UI, sans-serif`) : une webfont
+  ne serait pas disponible dans le contexte image de l'export.
+- Échelle UI (base 14 px, ratio ~1,15) : `1.125rem` titre du sélecteur, chiffre de progression ·
+  `1rem` titre de la feuille de match · `0.9375rem` nom de l'app · `0.875rem` texte courant, noms ·
+  `0.8125rem` boutons, sélecteur de schéma, méta d'en-tête · `0.75rem` titres de ligne, époques,
+  compteurs · `0.6875rem` pastilles de poste, initiales.
+- Graisses : 400 texte, 500 noms et contrôles, 600 boutons principaux et états actifs, 650 titres.
+  Titres à `letter-spacing: -0.01em`. Aucune capitale espacée en « eyebrow ».
+- Chiffres : `font-variant-numeric: tabular-nums` sur la progression, les époques et les schémas.
 - Échelle SVG (unités du viewBox) : `26` nom de joueur · `20` « Libre » · `15` poste et époque ·
   `26` légende de bas de terrain (letter-spacing 2 px).
-- Chiffres : `font-variant-numeric: tabular-nums` sur le badge de progression.
 
 ## Espacement, rayons, largeurs
 
-- Espacements : multiples de 4 (4, 7, 9, 10, 12, 14, 16, 18, 20, 22). Pas de valeur arbitraire hors
-  de cette échelle.
-- Rayons : `8` (chip), `10` (bouton, champ), `12` (conteneur de chips, terrain dans son cadre),
-  `14` (carte SVG), `18` (panneaux).
-- Layout : `grid-template-columns: minmax(0, 1fr) 380px`, `gap: 22px`, conteneur `1180px`.
+- Espacements : multiples de 2, en pratique 4, 6, 8, 10, 12, 14, 16, 20, 24. Gouttière du panneau :
+  20 px (16 px sur mobile).
+- Rayons : `--radius-sm` 4 px (pastilles, segments), `--radius` 6 px (boutons, champs, terrain),
+  3 px (tags de poste), 12 px uniquement pour le haut de la bottom sheet mobile. `14` reste le rayon
+  des cartes SVG.
+- Coquille : grille `minmax(0, 1fr) 400px` × `56px 1fr` (`--topbar-h`, `--panel-w`), pleine largeur,
+  sans conteneur centré. Barre de marque collante ; panneau collant sous la barre, pleine hauteur,
+  défilement interne.
 - Terrain : viewBox `1000 × 1480`, conteneur `max-width: min(580px, calc((100vh - 230px) * 0.676))`.
   Cette formule garantit que le gardien et la légende restent au-dessus de la ligne de flottaison.
-  **Ne pas la remplacer par une simple `max-width`** : c'est ce qui casse l'aperçu en 1440×900.
-- Breakpoint unique : `900px`. Le panneau passe sous le terrain, le conteneur du terrain reprend
-  `max-width: 100%`.
+  **Ne pas la remplacer par une simple `max-width`** : c'est ce qui casse l'aperçu en 1440×900. Le
+  sélecteur de schéma et le bandeau d'erreur partagent cette largeur pour s'aligner sur le terrain.
+- Breakpoint unique : `900px`. En dessous : une colonne (barre, terrain, feuille de match), le terrain
+  reprend `max-width: 100%`, le sélecteur de joueurs devient une bottom sheet.
 
 ## Composants
+
+### Barre de marque
+
+56 px, `--surface`, filet bas. À gauche la marque : carré 22 px aux couleurs du maillot « Hechter »
+(marine, liseré blanc, bande rouge, en dégradé de tokens — ce n'est pas un logo officiel), le nom en
+650 et le sous-titre muted séparé par un filet (masqué sous 900 px). À droite, le seul bouton
+principal de l'écran : « Exporter en PNG » avec icône de téléchargement.
+
+### Sélecteur de schéma
+
+Contrôle segmenté : rail `--surface-3`, padding 3, rayon 6 ; segments 30 px de haut, `0.8125rem`
+muted ; segment actif `--seg-on` + `--shadow-sm`, texte `--text` 600. `aria-pressed` porte l'état,
+`aria-label="Schéma tactique"` sur le groupe.
+
+### Feuille de match (`MatchSheet.tsx`, panneau au repos)
+
+- En-tête : « Feuille de match » + schéma courant ; à droite, progression : chiffre `n` en 650,
+  `/11`, libellé « titulaires » puis « XI complet » (vert), et **11 segments** de 8 × 4 px qui se
+  remplissent en `--text` puis passent tous en `--ok` à 11/11 (`role="progressbar"`).
+- Corps : les slots groupés par ligne — Gardien, Défense, Milieu, Attaque — via `slotsByLine()`
+  (`lib/formations.ts`), chaque ligne lue de gauche à droite. Titre de ligne en `0.75rem` 600
+  muted + effectif.
+- Ligne : grille `36px 28px 1fr auto`, 44 px minimum. Pastille de poste, avatar monogramme 28 px
+  (même couleur que sur le terrain, `avatarColor`), nom 500, époque à droite. Vide : avatar en
+  pointillés, « Choisir un joueur » muted.
+- Pied : consigne ou « XI complet — prêt à exporter. », bouton discret « Réinitialiser ».
+
+### Sélecteur de joueurs (`Picker.tsx`)
+
+Remplace la feuille de match dans le panneau (desktop) ; bottom sheet sur mobile.
+
+- Retour « Feuille de match » (chevron), titre avec le poste en pastille **rouge** (signal de
+  sélection) + « Choisir un joueur », postes acceptés en tags.
+- Titulaire actuel : bloc bordé, avatar, nom, bouton « Retirer » (`btn--danger`).
+- Recherche : champ 36 px avec icône loupe, focus = bordure `--focus` + anneau `--focus-soft`.
+- Ligne riche : avatar 32 px, nom, tags de postes + nationalité, époque alignée à droite.
+  Titulaire de ce slot surligné en `--accent-soft`. `Échap` ferme le sélecteur.
+
+### Bottom sheet (mobile, < 900 px)
+
+Feuille fixée en bas, `max-height: 85dvh`, haut arrondi 12 px, poignée 36 × 4, `--shadow-sheet`,
+voile `--scrim` cliquable pour fermer. Entrée : translation depuis le bas, 240 ms, ease-out
+exponentiel. Le défilement de la page est bloqué tant qu'elle est ouverte. La feuille de match reste
+rendue sous le terrain pour éviter un saut de mise en page.
+
+### Boutons
+
+- `btn--primary` : fond `--accent`, texte blanc, 600, 34 px, rayon 6. Un seul par écran (l'export).
+- `btn--quiet` : bordé `--border`, texte `--text-2` ; survol `--surface-2`.
+- `btn--danger` : bordé `--border`, texte `--danger-text` ; survol `--accent-soft`.
+- Désactivé : opacité 0,45, curseur `not-allowed`. `active` : translation 1 px.
 
 ### Carte de joueur (SVG, `Pitch.tsx`)
 
@@ -137,57 +216,32 @@ Le script n'écrit que les correspondances de nom certaines (égalité exacte, o
 famille quand un seul candidat correspond) et liste les joueurs non résolus, qui gardent leur
 monogramme.
 
-### Chip de schéma
-
-Hauteur ~33 px, rayon 8, texte `0.85rem` muted ; état actif : fond `--blue`, texte clair, 600.
-Regroupés dans un conteneur `--bg-elevated` bordé, rayon 12, `aria-label="Schéma tactique"`.
-
-### Badge de progression
-
-`8px 12px`, rayon 10, `0.82rem`, tabular-nums, muted. État complet : texte et bordure `--ok`,
-libellé `11/11 · XI complet`.
-
-### Boutons
-
-- `primary` : fond `--accent`, texte clair, 600, `9px 14px`, rayon 10. Un seul par écran
-  (l'export). Survol `#ef3a2c`, `active` translate 1 px.
-- `ghost` : transparent, bordure `--border`, texte muted. Variante `ghost--danger` : texte
-  `#ff9b92`, bordure rouge 40 %.
-- Désactivé : opacité 0,45, curseur `not-allowed`.
-
-### Ligne de joueur (panneau de sélection)
-
-Bouton pleine largeur, deux lignes : nom `0.9rem` 600, puis `postes — nationalité — époque` en
-`0.72rem` muted. Survol et état actif en bleu translucide. Liste `max-height: 460px` avec scroll
-propre, `autoFocus` sur la recherche.
-
-### Ligne de composition (panneau par défaut)
-
-Grille `52px 1fr` : poste en `0.7rem` letter-spacing 1 px muted, nom en `0.86rem`. Slot vide :
-« Choisir… » en italique muted.
-
 ## États à couvrir
 
-| État | Attendu |
-| --- | --- |
-| Slot vide | pointillés, « Libre », cliquable |
-| Slot sélectionné | bordure rouge 4 px, panneau ouvert sur ce slot |
-| Slot rempli | carte pleine, nom + époque, bouton « Retirer » disponible |
-| XI incomplet | badge `n/11` muted, export possible |
-| XI complet | badge vert `11/11 · XI complet`, message « prêt à exporter » |
-| Poste sans candidat | « Aucun joueur disponible pour ce poste. » |
-| Recherche sans résultat | même message, la liste se vide sans casser la mise en page |
-| Erreur d'export | bandeau `role="alert"` sous le layout, message du navigateur |
+| État                    | Attendu                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| Slot vide               | terrain : pointillés, « Libre » ; feuille : avatar pointillé, « Choisir un joueur » |
+| Slot sélectionné        | bordure rouge 4 px sur le terrain, sélecteur ouvert, pastille de poste rouge        |
+| Slot rempli             | carte pleine, nom + époque, bouton « Retirer » dans le sélecteur                    |
+| XI incomplet            | `n/11 titulaires`, segments remplis en `--text`, export possible                    |
+| XI complet              | `11/11 XI complet` en vert, 11 segments verts, « XI complet — prêt à exporter. »    |
+| Poste sans candidat     | « Aucun joueur disponible pour ce poste. »                                          |
+| Recherche sans résultat | « Aucun joueur ne correspond à « … » pour ce poste. »                               |
+| Erreur d'export         | bandeau `role="alert"` au-dessus du terrain, message du navigateur                  |
 
 ## Accessibilité
 
-- Contraste : `--text` sur `--bg` ≈ 15:1 ; `--muted` sur `--bg-elevated` ≈ 6:1 ; texte SVG clair sur
-  `cardFill` ≈ 7:1. Toute nouvelle teinte doit rester ≥ 4,5:1 pour du texte.
+- Contraste : `--text` sur `--surface` ≥ 15:1 dans les deux thèmes ; `--muted` sur `--surface`
+  ≈ 5,6:1 (clair) et ≈ 6:1 (sombre) ; blanc sur `--accent` ≈ 4,9:1. Texte SVG clair sur `cardFill`
+  ≈ 7:1. Toute nouvelle teinte doit rester ≥ 4,5:1 pour du texte.
 - Tout contrôle est un `<button>` (sauf les cartes SVG, `<g role="button" tabIndex={0}>` avec
   gestion Entrée/Espace).
-- Focus visible : `outline: 2px solid var(--blue)` sur le champ de recherche ; les boutons héritent
-  du focus natif — ne pas le supprimer sans le remplacer.
-- Le nom accessible ne dépend jamais de la couleur : le poste est écrit dans la carte.
+- Focus visible : `:focus-visible` global en `outline: 2px solid var(--focus)` ; le champ de
+  recherche remplace l'outline par une bordure + un anneau, jamais par rien.
+- Progression exposée en `role="progressbar"` (`aria-valuenow`), compteur du sélecteur en
+  `aria-live="polite"`.
+- `prefers-reduced-motion` ramène animations et transitions à 1 ms.
+- Le nom accessible ne dépend jamais de la couleur : le poste est écrit dans la carte et la ligne.
 
 ## Contraintes d'export (à relire avant toute retouche du SVG)
 
@@ -202,8 +256,10 @@ Grille `52px 1fr` : poste en `0.7rem` letter-spacing 1 px muted, nom en `0.86rem
 
 ## À ne pas faire
 
-- Ajouter une librairie d'UI ou d'icônes : l'interface tient en un fichier CSS et un fichier SVG.
+- Ajouter une librairie d'UI ou d'icônes : les icônes sont trois SVG inline en `currentColor`.
 - Utiliser le rouge pour un bouton destructif : le rouge est déjà pris par la sélection.
+- Remettre un fond nuit avec halo, des panneaux flottants arrondis ou des capitales espacées en
+  sur-titre : c'est le look que cette version a quitté.
 - Animer les cartes du terrain : le SVG est sérialisé, une animation CSS n'y existera pas.
 - Centrer le terrain dans une colonne plus large que 580 px : le panneau et le terrain doivent
   rester deux blocs lisibles côte à côte.

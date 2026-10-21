@@ -20,13 +20,7 @@ export interface Formation {
   readonly slots: readonly Slot[];
 }
 
-function slot(
-  id: string,
-  label: string,
-  accepts: readonly Position[],
-  x: number,
-  y: number,
-): Slot {
+function slot(id: string, label: string, accepts: readonly Position[], x: number, y: number): Slot {
   return { id, label, accepts, x, y };
 }
 
@@ -107,4 +101,49 @@ export function getFormation(id: FormationId): Formation {
 
 export function findSlot(formation: Formation, slotId: string): Slot | undefined {
   return formation.slots.find((candidate) => candidate.id === slotId);
+}
+
+/** Lignes de la feuille de match, dans l'ordre de lecture d'une compo (du but vers l'attaque). */
+export const LINES = ['goal', 'defense', 'midfield', 'attack'] as const;
+export type Line = (typeof LINES)[number];
+
+export const LINE_LABELS: Readonly<Record<Line, string>> = {
+  goal: 'Gardien',
+  defense: 'Défense',
+  midfield: 'Milieu',
+  attack: 'Attaque',
+};
+
+// Classement par étiquette et non par ordonnée : un piston (LWB) est plus bas qu'un milieu
+// axial sur le terrain, mais il compte dans le « 5 » du 3-5-2.
+const LINE_OF_LABEL: Readonly<Record<string, Line>> = {
+  GK: 'goal',
+  LB: 'defense',
+  CB: 'defense',
+  RB: 'defense',
+  LWB: 'midfield',
+  RWB: 'midfield',
+  DM: 'midfield',
+  CM: 'midfield',
+  LM: 'midfield',
+  RM: 'midfield',
+  AM: 'midfield',
+  LW: 'attack',
+  RW: 'attack',
+  ST: 'attack',
+};
+
+export interface LineGroup {
+  readonly line: Line;
+  readonly slots: readonly Slot[];
+}
+
+/** Slots regroupés par ligne, chaque ligne lue de gauche à droite ; les lignes vides sont omises. */
+export function slotsByLine(formation: Formation): LineGroup[] {
+  return LINES.map((line) => ({
+    line,
+    slots: formation.slots
+      .filter((slot) => (LINE_OF_LABEL[slot.label] ?? 'midfield') === line)
+      .sort((a, b) => a.x - b.x),
+  })).filter((group) => group.slots.length > 0);
 }

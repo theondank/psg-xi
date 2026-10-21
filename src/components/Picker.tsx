@@ -1,5 +1,6 @@
 import { eraLabel, type Player } from '../data/players';
 import type { Slot } from '../lib/formations';
+import { avatarColor, initials } from '../lib/avatar';
 import { eligiblePlayers, matchesQuery, playerAt, type Lineup } from '../lib/squad';
 
 interface PickerProps {
@@ -30,43 +31,81 @@ export function Picker({
   const sorted = [...options].sort(sortByName);
 
   return (
-    <section className="picker" aria-label={`Choix du ${slot.label}`}>
+    <section
+      className="picker"
+      aria-label={`Choix du ${slot.label}`}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') onClose();
+      }}
+    >
       <header className="picker__head">
-        <div>
-          <p className="picker__eyebrow">Poste recherché</p>
-          <h2 className="picker__title">
-            {slot.label}
-            <span className="picker__accepts">{slot.accepts.join(' · ')}</span>
-          </h2>
-        </div>
-        <button type="button" className="ghost" onClick={onClose} aria-label="Fermer le sélecteur">
-          ✕
+        <button type="button" className="back" onClick={onClose}>
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path
+              d="M10 3 5 8l5 5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Feuille de match
         </button>
+        <div className="picker__titles">
+          <h2 className="picker__title">
+            <span className="pos pos--lg">{slot.label}</span>
+            Choisir un joueur
+          </h2>
+          <p className="picker__accepts">
+            Postes acceptés :{' '}
+            {slot.accepts.map((position) => (
+              <span key={position} className="tag">
+                {position}
+              </span>
+            ))}
+          </p>
+        </div>
       </header>
 
       {current ? (
         <div className="picker__current">
-          <span>
-            Titulaire : <strong>{current.name}</strong> ({eraLabel(current)})
+          <span
+            className="avatar"
+            style={{ background: avatarColor(current.id) }}
+            aria-hidden="true"
+          >
+            {initials(current.name)}
           </span>
-          <button type="button" className="ghost ghost--danger" onClick={onClear}>
+          <span className="picker__current-text">
+            <span className="picker__current-label">Titulaire</span>
+            <strong>{current.name}</strong>
+          </span>
+          <button type="button" className="btn btn--danger" onClick={onClear}>
             Retirer
           </button>
         </div>
       ) : null}
 
-      <input
-        type="search"
-        className="picker__search"
-        placeholder="Rechercher un joueur…"
-        value={query}
-        onChange={(event) => {
-          onQueryChange(event.target.value);
-        }}
-        autoFocus
-      />
+      <div className="search">
+        <svg className="search__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <input
+          type="search"
+          className="search__input"
+          placeholder="Rechercher un joueur"
+          aria-label="Rechercher un joueur"
+          value={query}
+          onChange={(event) => {
+            onQueryChange(event.target.value);
+          }}
+          autoFocus
+        />
+      </div>
 
-      <p className="picker__count">
+      <p className="picker__count" aria-live="polite">
         {sorted.length} joueur{sorted.length > 1 ? 's' : ''} disponible
         {sorted.length > 1 ? 's' : ''}
       </p>
@@ -76,20 +115,39 @@ export function Picker({
           <li key={player.id}>
             <button
               type="button"
-              className={current?.id === player.id ? 'player player--active' : 'player'}
+              className={current?.id === player.id ? 'option is-current' : 'option'}
               onClick={() => {
                 onPick(player.id);
               }}
             >
-              <span className="player__name">{player.name}</span>
-              <span className="player__meta">
-                {player.positions.join(' · ')} — {player.nationality} — {eraLabel(player)}
+              <span
+                className="avatar"
+                style={{ background: avatarColor(player.id) }}
+                aria-hidden="true"
+              >
+                {initials(player.name)}
               </span>
+              <span className="option__main">
+                <span className="option__name">{player.name}</span>
+                <span className="option__tags">
+                  {player.positions.map((position) => (
+                    <span key={position} className="tag">
+                      {position}
+                    </span>
+                  ))}
+                  <span className="option__nat">{player.nationality}</span>
+                </span>
+              </span>
+              <span className="option__era">{eraLabel(player)}</span>
             </button>
           </li>
         ))}
         {sorted.length === 0 ? (
-          <li className="picker__empty">Aucun joueur disponible pour ce poste.</li>
+          <li className="picker__empty">
+            {query
+              ? `Aucun joueur ne correspond à « ${query} » pour ce poste.`
+              : 'Aucun joueur disponible pour ce poste.'}
+          </li>
         ) : null}
       </ul>
     </section>

@@ -15,7 +15,7 @@ Détail complet : `docs/DESIGN.md`. Ici, ce qui ne se négocie pas.
 5. **Couleurs** : `COLORS` (dans `Pitch.tsx`) pour le terrain, variables CSS de `:root` pour
    l'interface. Aucune couleur littérale dans un `.tsx`.
 6. **Le rouge `#da291c` signale la sélection et l'action principale.** Pas de rouge pour une action
-   destructrice : utiliser le style `ghost--danger`.
+   destructrice : utiliser le style `btn--danger`.
 7. **Accessibilité** : tout élément cliquable est un `<button>` ou un `<g role="button" tabIndex={0}>`
    avec gestion Entrée/Espace, `aria-label`, et focus visible. Ne jamais supprimer un outline sans le
    remplacer.

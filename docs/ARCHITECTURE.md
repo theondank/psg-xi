@@ -13,6 +13,7 @@ flowchart LR
   B --> D["App.tsx<br/>état: lineup, slot sélectionné"]
   D --> E["components/Pitch.tsx<br/>SVG 1000x1480"]
   D --> F["components/Picker.tsx<br/>liste des éligibles"]
+  D --> H["components/MatchSheet.tsx<br/>feuille de match"]
   E --> G["lib/exportPng.ts<br/>SVG -> canvas -> PNG"]
 ```
 
@@ -72,7 +73,7 @@ silencieusement un joueur compatible, et jamais on ne duplique un joueur.
 ### 4. Complétude
 
 `filledCount` compte les valeurs non `null` ; `isComplete` vérifie que **les 11** slots sont remplis.
-Le badge, le message de fin et le bouton d'export s'appuient dessus — l'export reste possible à 10/11
+Le compteur de progression, le message de fin et le bouton d'export s'appuient dessus — l'export reste possible à 10/11
 (choix produit : une image partielle est parfois ce qu'on veut).
 
 ## Pipeline d'export PNG
@@ -136,6 +137,7 @@ sans second chemin de rendu à maintenir.
 | `lib/exportPng.ts` | conversion et téléchargement | connaître le contenu du terrain |
 | `components/Pitch.tsx` | rendu du terrain et des cartes | décider d'un placement |
 | `components/Picker.tsx` | filtrer/afficher les éligibles | modifier le lineup directement |
+| `components/MatchSheet.tsx` | afficher les slots par ligne et la progression | regrouper les slots lui-même (`slotsByLine` vit dans `lib/formations.ts`) |
 | `App.tsx` | orchestration, état, handlers | calculer une règle métier |
 
 ## Limites connues

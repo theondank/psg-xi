@@ -54,7 +54,7 @@ npm run build && npm run preview -- --port 4173 --strictPort
 
 Parcours minimum, dans cet ordre :
 
-1. Remplir les 11 slots via la liste de droite → badge `11/11 · XI complet`.
+1. Remplir les 11 slots via la liste de droite → compteur `11/11 XI complet`.
 2. Vérifier que les noms longs ne débordent pas (Donnarumma, Kvaratskhelia, Ibrahimović, Di María).
 3. Changer de schéma → au moins 9 slots restent remplis, aucun doublon.
 4. Cliquer « Exporter en PNG » → un fichier `.png` doit apparaître, **2000 × 2960**.
@@ -63,11 +63,11 @@ Parcours minimum, dans cet ordre :
 Automatisable en CDP quand on a un navigateur piloté :
 
 ```js
-// remplir un slot : la liste de composition suit l'ordre de formation.slots
-document.querySelectorAll('.slotrow')[i].click();
-[...document.querySelectorAll('.player')].find(b => b.textContent.includes('Cavani')).click();
+// remplir un slot : la feuille de match est groupée par ligne (gardien → attaque)
+document.querySelectorAll('.row')[i].click();
+[...document.querySelectorAll('.option')].find(b => b.textContent.includes('Cavani')).click();
 // assertions utiles
-document.querySelector('.badge').textContent;          // "11/11 · XI complet"
+document.querySelector('.progress__count').textContent; // "11/11XI complet"
 document.documentElement.scrollWidth > window.innerWidth; // doit être false
 ```
 

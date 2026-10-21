@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pitch } from './components/Pitch';
 import { Picker } from './components/Picker';
+import { MatchSheet } from './components/MatchSheet';
 import { usePhotos } from './hooks/usePhotos';
 import { FORMATION_IDS, getFormation, type FormationId } from './lib/formations';
 import { exportSvgToPng } from './lib/exportPng';
@@ -12,7 +13,6 @@ import {
   filledCount,
   isComplete,
   place,
-  playerAt,
   type Lineup,
 } from './lib/squad';
 
@@ -80,24 +80,49 @@ export default function App() {
     }
   }
 
+  function handleClose() {
+    setSelectedSlotId(null);
+    setQuery('');
+  }
+
   return (
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand__dot" aria-hidden="true" />
-          <div>
-            <h1>Mon XI PSG</h1>
-            <p className="brand__sub">Le onze all-time du Paris Saint-Germain</p>
-          </div>
+          <span className="brand__mark" aria-hidden="true" />
+          <h1 className="brand__name">
+            Mon XI PSG
+            <span className="brand__sub">Le onze all-time du Paris Saint-Germain</span>
+          </h1>
         </div>
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={() => void handleExport()}
+          disabled={busy}
+        >
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path
+              d="M8 2.5v7m0 0L5 6.5m3 3 3-3M3 11.5v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {busy ? 'Export…' : 'Exporter en PNG'}
+        </button>
+      </header>
 
-        <div className="topbar__actions">
-          <div className="formations" role="group" aria-label="Schéma tactique">
+      <main className="stage">
+        <div className="stage__bar">
+          <div className="segmented" role="group" aria-label="Schéma tactique">
             {FORMATION_IDS.map((id) => (
               <button
                 key={id}
                 type="button"
-                className={id === formationId ? 'chip chip--on' : 'chip'}
+                className="segmented__item"
                 aria-pressed={id === formationId}
                 onClick={() => {
                   handleFormationChange(id);
@@ -107,26 +132,14 @@ export default function App() {
               </button>
             ))}
           </div>
-
-          <span className={complete ? 'badge badge--done' : 'badge'}>
-            {filled}/11{complete ? ' · XI complet' : ''}
-          </span>
-
-          <button
-            type="button"
-            className="ghost"
-            onClick={handleReset}
-            disabled={filled === 0}
-          >
-            Réinitialiser
-          </button>
-          <button type="button" className="primary" onClick={() => void handleExport()} disabled={busy}>
-            {busy ? 'Export…' : 'Exporter en PNG'}
-          </button>
         </div>
-      </header>
 
-      <main className="layout">
+        {error ? (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        ) : null}
+
         <div className="pitch-wrap">
           <Pitch
             formation={formation}
@@ -137,9 +150,18 @@ export default function App() {
             svgRef={svgRef}
           />
         </div>
+      </main>
 
-        <aside className="sidebar">
-          {selectedSlot ? (
+      <aside className={selectedSlot ? 'panel is-picking' : 'panel'}>
+        {selectedSlot ? (
+          <>
+            <button
+              type="button"
+              className="scrim"
+              aria-label="Fermer le sélecteur"
+              tabIndex={-1}
+              onClick={handleClose}
+            />
             <Picker
               slot={selectedSlot}
               lineup={lineup}
@@ -147,54 +169,20 @@ export default function App() {
               onQueryChange={setQuery}
               onPick={handlePick}
               onClear={handleClear}
-              onClose={() => {
-                setSelectedSlotId(null);
-                setQuery('');
-              }}
+              onClose={handleClose}
             />
-          ) : (
-            <section className="summary" aria-label="Composition">
-              <h2 className="summary__title">Ta composition</h2>
-              <p className="summary__hint">
-                Clique sur une carte du terrain pour choisir un joueur. Seuls les postes compatibles
-                sont proposés.
-              </p>
-              <ul className="summary__list">
-                {formation.slots.map((slot) => {
-                  const player = playerAt(lineup, slot.id);
-                  return (
-                    <li key={slot.id}>
-                      <button
-                        type="button"
-                        className={player ? 'slotrow' : 'slotrow slotrow--empty'}
-                        onClick={() => {
-                          handleSelectSlot(slot.id);
-                        }}
-                      >
-                        <span className="slotrow__pos">{slot.label}</span>
-                        <span className="slotrow__name">{player ? player.name : 'Choisir…'}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-              {complete ? (
-                <p className="summary__done">XI complet — prêt à exporter. 🔴🔵</p>
-              ) : null}
-            </section>
-          )}
-        </aside>
-      </main>
-
-      {error ? (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      ) : null}
-
-      <footer className="footer">
-        Données statiques, aucun appel réseau · export PNG 100 % local · React + TypeScript
-      </footer>
+          </>
+        ) : (
+          <MatchSheet
+            formation={formation}
+            lineup={lineup}
+            filled={filled}
+            complete={complete}
+            onSelectSlot={handleSelectSlot}
+            onReset={handleReset}
+          />
+        )}
+      </aside>
     </div>
   );
 }

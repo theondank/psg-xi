@@ -54,7 +54,8 @@ src/
   lib/squad.ts          logique pure : place, clear, éligibilité, adaptLineup
   lib/exportPng.ts      SVG → PNG (Blob + canvas, sans dépendance)
   components/Pitch.tsx  terrain SVG (styles en attributs → export fidèle)
-  components/Picker.tsx panneau de sélection
+  components/Picker.tsx sélecteur de joueurs
+  components/MatchSheet.tsx feuille de match (slots par ligne, progression)
   App.tsx               état + orchestration
 scripts/check-docs.mjs  cohérence de la documentation (liens, scripts, chemins)
 ```

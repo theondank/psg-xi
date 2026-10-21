@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FORMATION_IDS, FORMATIONS, findSlot } from './formations';
+import { FORMATION_IDS, FORMATIONS, LINES, findSlot, slotsByLine } from './formations';
 import { POSITIONS } from '../data/players';
 
 describe('formations', () => {
@@ -41,5 +41,32 @@ describe('formations', () => {
     for (const id of FORMATION_IDS) {
       expect(FORMATIONS[id].slots.length).toBe(11);
     }
+  });
+});
+
+describe('slotsByLine', () => {
+  it.each(FORMATION_IDS)('%s : chaque slot apparaît une fois, lignes dans l’ordre du jeu', (id) => {
+    const lines = slotsByLine(FORMATIONS[id]);
+    const ids = lines.flatMap((line) => line.slots.map((slot) => slot.id));
+    expect(ids).toHaveLength(11);
+    expect(new Set(ids).size).toBe(11);
+    const order = lines.map((line) => line.line);
+    expect(order).toEqual([...LINES].filter((line) => order.includes(line)));
+    expect(lines.every((line) => line.slots.length > 0)).toBe(true);
+  });
+
+  it('suit le nom du schéma : 4-3-3 → 1 + 4 + 3 + 3', () => {
+    const counts = slotsByLine(FORMATIONS['4-3-3']).map((line) => line.slots.length);
+    expect(counts).toEqual([1, 4, 3, 3]);
+  });
+
+  it('range les pistons du 3-5-2 au milieu', () => {
+    const counts = slotsByLine(FORMATIONS['3-5-2']).map((line) => line.slots.length);
+    expect(counts).toEqual([1, 3, 5, 2]);
+  });
+
+  it('ordonne chaque ligne de gauche à droite', () => {
+    const defense = slotsByLine(FORMATIONS['4-3-3']).find((group) => group.line === 'defense');
+    expect(defense?.slots.map((slot) => slot.id)).toEqual(['lb', 'cb1', 'cb2', 'rb']);
   });
 });

@@ -32,9 +32,11 @@ src/lib/formations.ts      schémas, slots, postes acceptés, coordonnées terra
 src/lib/squad.ts           LOGIQUE MÉTIER pure : place, clear, éligibilité, adaptLineup
 src/lib/exportPng.ts       SVG → PNG (Blob + canvas), sans dépendance
 src/components/Pitch.tsx   terrain SVG, cartes de joueurs (styles en attributs)
-src/components/Picker.tsx  panneau de sélection d'un slot
+src/components/Picker.tsx  sélecteur de joueurs d'un slot (bottom sheet sur mobile)
+src/components/MatchSheet.tsx  feuille de match : slots par ligne, progression
 src/App.tsx                état + orchestration, aucun calcul métier
-src/styles.css             thème (variables CSS), layout, breakpoints
+src/styles.css             thème clair/sombre (variables CSS), Geist, layout, breakpoint
+public/fonts/              Geist auto-hébergée (woff2 variable + OFL)
 ```
 
 Flux : `PLAYERS` → `eligiblePlayers(lineup, slot)` → liste du `Picker` → `onPick(playerId)` →
@@ -70,7 +72,7 @@ Flux : `PLAYERS` → `eligiblePlayers(lineup, slot)` → liste du `Picker` → `
   `src/lib/*.test.ts`, puis le code. Les deux bugs de la première version (déréférence `null`,
   libellé « María ») ont été trouvés par les tests, pas à l'œil.
 - **Vérifier dans un vrai navigateur** dès qu'on touche l'UI : `npm run preview -- --port 4173`,
-  remplir un onze, vérifier le badge `11/11 · XI complet`, cliquer « Exporter en PNG » et vérifier
+  remplir un onze, vérifier le compteur `11/11 XI complet`, cliquer « Exporter en PNG » et vérifier
   que le fichier produit fait bien 2000 × 2960. Un export qui plante au clic ne se voit pas dans
   les tests.
 - **Un commit = un lot cohérent**, message en français au format `type(scope): résumé` + corps
