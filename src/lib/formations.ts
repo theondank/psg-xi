@@ -116,7 +116,7 @@ export const LINE_LABELS: Readonly<Record<Line, string>> = {
 
 // Classement par étiquette et non par ordonnée : un piston (LWB) est plus bas qu'un milieu
 // axial sur le terrain, mais il compte dans le « 5 » du 3-5-2.
-const LINE_OF_LABEL: Readonly<Record<string, Line>> = {
+const LINE_OF_LABEL: Readonly<Partial<Record<string, Line>>> = {
   GK: 'goal',
   LB: 'defense',
   CB: 'defense',
@@ -138,12 +138,21 @@ export interface LineGroup {
   readonly slots: readonly Slot[];
 }
 
-/** Slots regroupés par ligne, chaque ligne lue de gauche à droite ; les lignes vides sont omises. */
+/** Ligne d'une étiquette de slot ; `undefined` si l'étiquette n'est pas déclarée. */
+export function lineOf(label: string): Line | undefined {
+  return LINE_OF_LABEL[label];
+}
+
+/**
+ * Slots regroupés par ligne, chaque ligne lue de gauche à droite ; les lignes vides sont omises.
+ * Une étiquette non déclarée tombe au milieu pour rester affichée : le test « chaque étiquette de
+ * slot a une ligne déclarée » empêche que ce repli serve réellement.
+ */
 export function slotsByLine(formation: Formation): LineGroup[] {
   return LINES.map((line) => ({
     line,
     slots: formation.slots
-      .filter((slot) => (LINE_OF_LABEL[slot.label] ?? 'midfield') === line)
+      .filter((slot) => (lineOf(slot.label) ?? 'midfield') === line)
       .sort((a, b) => a.x - b.x),
   })).filter((group) => group.slots.length > 0);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FORMATION_IDS, FORMATIONS, LINES, findSlot, slotsByLine } from './formations';
+import { FORMATION_IDS, FORMATIONS, LINES, findSlot, lineOf, slotsByLine } from './formations';
 import { POSITIONS } from '../data/players';
 
 describe('formations', () => {
@@ -53,6 +53,16 @@ describe('slotsByLine', () => {
     const order = lines.map((line) => line.line);
     expect(order).toEqual([...LINES].filter((line) => order.includes(line)));
     expect(lines.every((line) => line.slots.length > 0)).toBe(true);
+  });
+
+  it.each(FORMATION_IDS)('%s : chaque étiquette de slot a une ligne déclarée', (id) => {
+    for (const slot of FORMATIONS[id].slots) {
+      expect(lineOf(slot.label)).toBeDefined();
+    }
+  });
+
+  it('ne range pas en silence une étiquette inconnue', () => {
+    expect(lineOf('CF')).toBeUndefined();
   });
 
   it('suit le nom du schéma : 4-3-3 → 1 + 4 + 3 + 3', () => {
