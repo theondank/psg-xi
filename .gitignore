@@ -6,3 +6,6 @@ dist-ssr
 .vite
 coverage
 *.tsbuildinfo
+.claude/settings.local.json
+.claude/worktrees
+CLAUDE.local.md

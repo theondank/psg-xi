@@ -1,7 +1,7 @@
 :root {
   --bg: #030a1a;
   --bg-elevated: #071228;
-  --bg-card: #0d2a5c;
+  --bg-input: #040c1e;
   --border: #1d3563;
   --text: #f2f6ff;
   --muted: #8ba3cf;
@@ -269,7 +269,7 @@ button:disabled {
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #040c1e;
+  background: var(--bg-input);
   color: var(--text);
   font: inherit;
   font-size: 0.88rem;

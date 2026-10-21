@@ -17,7 +17,22 @@ npm test         # Vitest (logique pure)
 npm run lint     # ESLint (typescript-eslint strict)
 npm run build    # tsc -b + vite build → dist/
 npm run preview  # sert le build de production
+npm run docs:check
 ```
+
+## Documentation
+
+| Fichier | Contenu |
+| --- | --- |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | modèle d'état, règles métier, pipeline d'export, décisions |
+| [docs/DESIGN.md](docs/DESIGN.md) | design system : tokens, composants, contraintes d'export PNG |
+| [docs/DATA.md](docs/DATA.md) | schéma joueur, vocabulaire des postes, ajouter un joueur ou un schéma |
+| [docs/FEATURES.md](docs/FEATURES.md) | fonctionnalités actuelles, backlog priorisé, arbitrages ouverts |
+| [docs/TESTING.md](docs/TESTING.md) | ce qui est testé, ce qui ne l'est pas, recette navigateur |
+| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | workflow de branche, definition of done, harness Claude Code |
+
+`npm run docs:check` vérifie que les liens, les scripts `npm run` et les chemins cités dans les
+documents existent réellement.
 
 ## Ce que fait l'app
 
@@ -36,11 +51,12 @@ npm run preview  # sert le build de production
 src/
   data/players.ts       effectif (données statiques, source unique de vérité)
   lib/formations.ts     schémas, slots, postes acceptés, coordonnées
-  lib/squad.ts          logique pure : place, clear, eligibilité, adaptLineup
+  lib/squad.ts          logique pure : place, clear, éligibilité, adaptLineup
   lib/exportPng.ts      SVG → PNG (Blob + canvas, sans dépendance)
   components/Pitch.tsx  terrain SVG (styles en attributs → export fidèle)
   components/Picker.tsx panneau de sélection
   App.tsx               état + orchestration
+scripts/check-docs.mjs  cohérence de la documentation (liens, scripts, chemins)
 ```
 
 ## Choix techniques
@@ -57,12 +73,25 @@ src/
 
 Les joueurs, années et nationalités sont saisis à la main : c'est la seule source de vérité, donc
 la seule chose à corriger si une fiche est fausse. Pas de scraping, pas de dépendance à une API
-qui casse. Ajouter un joueur = une ligne dans `src/data/players.ts` (+ un test si le poste est
-ambigu).
+qui casse. La procédure d'ajout est dans [docs/DATA.md](docs/DATA.md).
 
 ## Pistes pour la suite
 
-- Partager la compo via l'URL (`?f=4-3-3&p=gk:donnarumma,...`) — sérialisation pure, testable.
-- Mode « draft » : deux joueurs tirent au sort depuis un pool commun.
-- Notation par pair (notes de la rédaction) — attention, ça devient une opinion à assumer.
-- Export en story 1080×1920 : un deuxième viewBox suffit.
+Voir [docs/FEATURES.md](docs/FEATURES.md) pour le backlog complet avec critères d'acceptation. En
+tête : partage de la compo par URL, persistance locale, bouton « XI aléatoire ».
+
+## Travailler avec un agent (Claude Code)
+
+Le dépôt embarque son propre contexte d'agent :
+
+- `CLAUDE.md` — commandes, carte du code, invariants, pièges connus. C'est le contrat à respecter.
+- `.claude/settings.json` — permissions (autorisé / à confirmer / interdit) et hook de formatage
+  Prettier après chaque édition.
+- `.claude/commands/` — `/verifier`, `/feature <description>`, `/design <objectif>`, `/revue`.
+- `.claude/agents/` — `logic-tester` (logique et tests), `ui-polisher` (design), `data-auditor`
+  (exactitude des fiches joueurs).
+- `.claude/rules/` — règles détaillées chargées à chaque session.
+
+Tout est versionné : un clone du dépôt donne un agent opérationnel. Les préférences personnelles vont
+dans `.claude/settings.local.json` (gitignoré). Le détail est dans
+[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).

@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
+    "docs:check": "node scripts/check-docs.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
