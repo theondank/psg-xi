@@ -97,6 +97,21 @@ Deux contraintes en découlent, et elles expliquent la moitié du code de `Pitch
 - **Les polices doivent être système** (`system-ui, -apple-system, Segoe UI, sans-serif`) : une police
   téléchargée ne serait pas disponible dans le contexte de l'image.
 
+### Portraits : pourquoi des data URL
+
+Une image SVG chargée via `<img src="blob:…">` est un document *statique* : elle **ne charge aucune
+ressource externe**. Une `<image href="https://…">` s'afficherait à l'écran mais serait absente du
+PNG. Les portraits sont donc convertis en data URL (`lib/photos.ts` : `fetch` → `blob` →
+`FileReader`) avant le rendu, et le SVG cloné reste autonome.
+
+Conséquences :
+
+- la source distante doit envoyer `Access-Control-Allow-Origin` (le CDN API-Sports envoie `*`) ;
+  sans CORS, le `fetch` échoue et le monogramme reste — jamais d'image cassée ;
+- un cache mémoire (`Map`) évite de re-télécharger un portrait déjà chargé ;
+- toute image ajoutée au terrain doit passer par ce mécanisme, sinon l'export ment sur ce que
+  montre l'écran.
+
 Le rendu à l'écran et le PNG sortent donc du même arbre SVG : ce que tu vois est ce que tu exportes,
 sans second chemin de rendu à maintenir.
 

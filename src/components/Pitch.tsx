@@ -3,6 +3,7 @@ import { eraLabel, shortName, type Player } from '../data/players';
 import type { Formation, Slot } from '../lib/formations';
 import { playerAt, type Lineup } from '../lib/squad';
 import { avatarColor, initials } from '../lib/avatar';
+import type { PhotoMap } from '../lib/photos';
 
 /** Dimensions du terrain dans l'espace SVG (ratio proche d'un vrai terrain). */
 const W = 1000;
@@ -27,6 +28,7 @@ const COLORS = {
 interface PitchProps {
   readonly formation: Formation;
   readonly lineup: Lineup;
+  readonly photos: PhotoMap;
   readonly selectedSlotId: string | null;
   readonly onSelectSlot: (slotId: string) => void;
   readonly svgRef: Ref<SVGSVGElement>;
@@ -43,11 +45,13 @@ function toSvgY(percent: number): number {
 function PlayerCard({
   slot,
   player,
+  photo,
   selected,
   onSelect,
 }: {
   readonly slot: Slot;
   readonly player: Player | null;
+  readonly photo: string | null;
   readonly selected: boolean;
   readonly onSelect: () => void;
 }) {
@@ -81,16 +85,34 @@ function PlayerCard({
         strokeWidth={selected ? 4 : 2}
         strokeDasharray={player ? undefined : '10 8'}
       />
+      {player && photo ? (
+        <>
+          <defs>
+            <clipPath id={`avatar-clip-${slot.id}`}>
+              <circle cx={cx - CARD_W / 2 + 30} cy={cy} r={24} />
+            </clipPath>
+          </defs>
+          <image
+            href={photo}
+            x={cx - CARD_W / 2 + 6}
+            y={cy - 24}
+            width={48}
+            height={48}
+            preserveAspectRatio="xMidYMid slice"
+            clipPath={`url(#avatar-clip-${slot.id})`}
+          />
+        </>
+      ) : null}
       <circle
         cx={cx - CARD_W / 2 + 30}
         cy={cy}
         r={24}
-        fill={player ? avatarColor(player.id) : 'transparent'}
+        fill={player && photo ? 'transparent' : player ? avatarColor(player.id) : 'transparent'}
         stroke={selected ? COLORS.accent : player ? COLORS.cardStroke : COLORS.muted}
         strokeWidth={2}
         strokeDasharray={player ? undefined : '6 5'}
       />
-      {player ? (
+      {player && !photo ? (
         <text
           x={cx - CARD_W / 2 + 30}
           y={cy + 6}
@@ -141,7 +163,14 @@ function PlayerCard({
   );
 }
 
-export function Pitch({ formation, lineup, selectedSlotId, onSelectSlot, svgRef }: PitchProps) {
+export function Pitch({
+  formation,
+  lineup,
+  photos,
+  selectedSlotId,
+  onSelectSlot,
+  svgRef,
+}: PitchProps) {
   const stripes = Array.from({ length: 10 }, (_, index) => index);
 
   return (
@@ -185,17 +214,21 @@ export function Pitch({ formation, lineup, selectedSlotId, onSelectSlot, svgRef 
         <rect x={440} y={PITCH_TOP + PITCH_HEIGHT} width={120} height={20} />
       </g>
 
-      {formation.slots.map((slot) => (
-        <PlayerCard
-          key={slot.id}
-          slot={slot}
-          player={playerAt(lineup, slot.id)}
-          selected={selectedSlotId === slot.id}
-          onSelect={() => {
-            onSelectSlot(slot.id);
-          }}
-        />
-      ))}
+      {formation.slots.map((slot) => {
+        const player = playerAt(lineup, slot.id);
+        return (
+          <PlayerCard
+            key={slot.id}
+            slot={slot}
+            player={player}
+            photo={player ? (photos[player.id] ?? null) : null}
+            selected={selectedSlotId === slot.id}
+            onSelect={() => {
+              onSelectSlot(slot.id);
+            }}
+          />
+        );
+      })}
 
       <text
         x={W / 2}

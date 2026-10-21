@@ -17,8 +17,10 @@
 | F11 | Responsive | Aucun débordement horizontal à 1440, 900 et 390 px ; le terrain tient au-dessus de la ligne de flottaison en desktop |
 | F12 | Erreur d'export | Un échec de conversion affiche un bandeau `role="alert"` au lieu d'échouer en silence |
 | F13 | Avatars monogrammes | Chaque carte porte un médaillon : initiales sans diacritique + couleur déterministe issue de l'id ; identique à l'écran et dans le PNG |
+| F14 | Pipeline portraits | Si un joueur a une URL dans `src/data/photos.ts`, son portrait s'affiche dans le médaillon et se retrouve dans le PNG exporté ; en cas d'absence, d'échec réseau ou de CORS refusé, le monogramme reste (aucune image cassée) |
 
-Rien de tout cela ne dépend du réseau : l'app démarre et fonctionne hors ligne après chargement.
+Sauf F14 (portraits chargés à la demande depuis le CDN), rien de tout cela ne dépend du réseau :
+l'app démarre et fonctionne hors ligne après chargement.
 
 ## Backlog priorisé
 
@@ -28,6 +30,7 @@ Effort : **S** ≈ moins d'une heure, **M** ≈ une demi-journée, **L** ≈ une
 
 | Priorité | Fonctionnalité | Objectif | Critère d'acceptation | Effort |
 | --- | --- | --- | --- | --- |
+| P0 | Compléter les portraits | Vrais visages sur les 87 fiches | `APISPORTS_KEY=… node scripts/fetch-photo-ids.mjs` puis contrôle visuel d'un échantillon ; aucun joueur ne doit afficher un visage d'un autre joueur | S (bloqué : clé API-Sports) |
 | P1 | Partage par URL | Envoyer sa compo sans capture d'écran | `?f=4-3-3&p=gk:donnarumma,lb:maxwell,…` recharge exactement le même onze ; paramètre invalide ignoré sans casser la page ; test unitaire de `encodeLineup`/`decodeLineup` (aller-retour + entrées malformées) | S |
 | P2 | Persistance locale | Retrouver sa compo après un rafraîchissement | Le state est sauvegardé sous une clé versionnée (`psg-xi:v1`), restauré au chargement, et un schéma obsolète ne bloque pas l'app | S |
 | P3 | XI aléatoire | Démarrer en un clic, contenu de démo | Remplit 11 slots avec des joueurs éligibles, jamais deux fois le même ; un test vérifie qu'aucun slot n'est incompatible | S |
@@ -48,7 +51,7 @@ Effort : **S** ≈ moins d'une heure, **M** ≈ une demi-journée, **L** ≈ une
 | Sujet | La question | Pourquoi ce n'est pas à l'agent de décider |
 | --- | --- | --- |
 | Notation des joueurs | Note par poste ? Par siècle ? Par utilisateur ? | C'est une opinion : il faut dire qui note et sur quelle base, sinon l'app invente une vérité |
-| Photos de joueurs | Remplacer le monogramme par de vrais portraits | Deux voies mesurées dans `docs/DESIGN.md` (« Portraits réels ») : CDN API-Sports (200 + CORS `*` sans clé, mais droits d'usage à vérifier) ou portraits Wikimedia (licences à tracer). Arbitrage juridique + choix de la source avant tout code |
+| Photos de joueurs | Remplacer le monogramme par de vrais portraits | **Tranché** : CDN API-Sports. Le pipeline est en place (F14) ; il ne manque que la clé api-sports.io pour générer la table des ids (`scripts/fetch-photo-ids.mjs`) |
 | Comparaison avec un onze réel | Confronter la compo à un onze aligné une saison donnée | Demande une source de compositions officielles : périmètre et effort à valider |
 | Thème clair | Proposer deux thèmes | L'export est sombre : un thème clair crée deux rendus à maintenir pour un gain discutable |
 

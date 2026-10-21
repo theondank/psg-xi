@@ -86,6 +86,7 @@ Flux : `PLAYERS` → `eligiblePlayers(lineup, slot)` → liste du `Picker` → `
 | Changement de règle de placement | `src/lib/squad.ts`, `squad.test.ts`, `docs/ARCHITECTURE.md` |
 | Design, couleurs, typo | `src/styles.css`, `COLORS` dans `Pitch.tsx`, `docs/DESIGN.md` |
 | Nouvelle fonctionnalité | `src/lib/` (logique + test) puis `src/App.tsx` puis le composant |
+| Portraits / photos | `src/data/photos.ts` (table générée), `lib/photos.ts`, `hooks/usePhotos.ts` |
 | Documentation | `docs/`, `README.md`, `npm run docs:check` |
 
 ## Détail des règles

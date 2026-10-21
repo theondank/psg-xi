@@ -113,18 +113,29 @@ poste en haut à droite, aligné à droite.
 Un monogramme n'est pas un visage. Les deux voies vers de vraies photos, avec leurs faits mesurés :
 
 1. **CDN d'API-Sports** (`media.api-sports.io/football/players/<id>.png`) : HTTP 200, `image/png`,
-   CORS `*` — techniquement intégrable et exportable sans clé. **Mais** l'usage des photos est
-   régi par leurs conditions (compte requis pour leur API de données) : le droit d'utiliser le CDN
-   sans abonnement est à vérifier avant tout code. La dépendance réseau et la pérennité des URLs
-   sont deux autres risques.
+   CORS `*` — **retenu**. L'id est interne au fournisseur et se résout uniquement via l'API
+   api-sports.io, qui exige une clé : `scripts/fetch-photo-ids.mjs` génère la table
+   (`src/data/photos.ts`) à partir de `APISPORTS_KEY`.
 2. **Portraits Wikimedia Commons** (licences CC BY-SA / domaine public, CORS `*`) : aucune clé,
    mais ~87 fichiers à sourcer, licences à tracer (`CREDITS.md`) et attribution à embarquer dans
-   l'export PNG.
+   l'export PNG. Non retenu pour l'instant.
 
-En attendant l'arbitrage, le SVG n'embarque **aucune image externe** (contrainte d'export, cf.
-« Contraintes d'export ») et le monogramme tient lieu de visage. Le point d'insertion prévu est
-`lib/avatar.ts` : remplacer la couleur par un mapping `id → URL d'image` dans un composant dédié,
-sans toucher à `Pitch.tsx`.
+Ce qui est implémenté : `lib/photos.ts` (fetch → data URL + cache), `hooks/usePhotos.ts`, rendu
+`<image>` clippé en cercle dans `Pitch.tsx`, monogramme en repli. **La table est vide tant que la clé
+n'est pas fournie** : sans correspondance vérifiée, l'interface affiche le monogramme.
+
+> Règle : ne jamais remplir `PLAYER_PHOTOS` à la main avec un id supposé. Vérifié en practice : l'id
+> `276` du CDN API-Sports n'est pas Kylian Mbappé — un visage faux est pire qu'un monogramme.
+
+Régénérer la table :
+
+```bash
+APISPORTS_KEY=xxxxx node scripts/fetch-photo-ids.mjs
+```
+
+Le script n'écrit que les correspondances de nom certaines (égalité exacte, ou initiale + nom de
+famille quand un seul candidat correspond) et liste les joueurs non résolus, qui gardent leur
+monogramme.
 
 ### Chip de schéma
 

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pitch } from './components/Pitch';
 import { Picker } from './components/Picker';
+import { usePhotos } from './hooks/usePhotos';
 import { FORMATION_IDS, getFormation, type FormationId } from './lib/formations';
 import { exportSvgToPng } from './lib/exportPng';
 import {
@@ -27,6 +28,7 @@ export default function App() {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const formation = getFormation(formationId);
+  const photos = usePhotos(lineup);
   const selectedSlot = formation.slots.find((slot) => slot.id === selectedSlotId);
   const filled = filledCount(lineup);
   const complete = isComplete(lineup);
@@ -129,6 +131,7 @@ export default function App() {
           <Pitch
             formation={formation}
             lineup={lineup}
+            photos={photos}
             selectedSlotId={selectedSlotId}
             onSelectSlot={handleSelectSlot}
             svgRef={svgRef}

@@ -124,3 +124,18 @@ préférences (modèle, permissions supplémentaires) sans les imposer aux autre
 `npm run docs:check` vérifie que les liens relatifs pointent vers des fichiers existants, que les
 `npm run <script>` cités existent dans `package.json` et que les chemins de fichiers mentionnés
 existent. Lancer après toute modification de documentation.
+
+## Portraits des joueurs
+
+La table `src/data/photos.ts` est **générée**, jamais saisie à la main :
+
+```bash
+APISPORTS_KEY=xxxxx node scripts/fetch-photo-ids.mjs   # résout les ids via api-sports.io
+node scripts/fetch-photo-ids.mjs --dry-run             # vérifie le parsing, sans réseau
+```
+
+- La clé n'est jamais committée : elle passe par l'environnement du shell.
+- Le script n'écrit que les correspondances de nom certaines et liste les non-résolus.
+- Ne jamais inventer un id : un visage faux est pire qu'un monogramme (l'id `276` du CDN n'est pas
+  Mbappé, vérifié).
+- Sans portrait, l'interface affiche le monogramme — le comportement reste correct.
