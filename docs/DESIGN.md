@@ -55,20 +55,34 @@ Ombres : `--shadow-sm` (segment actif), `--shadow-pitch` (le terrain, seul objet
 
 ### Terrain (`COLORS` de `Pitch.tsx`)
 
-| Clé          | Valeur    | Usage                           |
-| ------------ | --------- | ------------------------------- |
-| `background` | `#040f26` | fond du SVG                     |
-| `stripe`     | `#0a1f45` | bandes alternées (5 sur 10)     |
-| `line`       | `#c9d6f2` | lignes du terrain, opacité 0,75 |
-| `cardFill`   | `#123468` | carte d'un joueur placé         |
-| `cardStroke` | `#3a63ad` | bordure d'une carte remplie     |
-| `accent`     | `#da291c` | bordure d'un slot sélectionné   |
-| `text`       | `#f4f7ff` | nom du joueur                   |
-| `muted`      | `#8ba3cf` | poste, époque, « Libre »        |
+Le terrain **suit le thème** : `COLORS.light` (pelouse de jour, cartes blanches façon habillage TV)
+et `COLORS.dark` (pelouse de nocturne, cartes marine). Le thème arrive en prop depuis
+`hooks/useColorScheme.ts` : les couleurs du SVG sont des attributs, les variables CSS ne
+l'atteignent pas. **Le PNG exporté suit donc le thème de l'OS au moment du clic.**
 
-Ces huit clés sont la seule source de couleur du terrain. Un slot vide utilise `muted` en pointillés
-et un fond translucide (`rgba(13,42,92,.35)`). Le terrain ne suit pas encore le thème : c'est la
-prochaine étape (décision prise : en mode clair, le terrain et le PNG passeront en clair).
+| Clé | Clair | Sombre | Usage |
+| --- | --- | --- | --- |
+| `grass` / `grassAlt` | `#3d8b3d` / `#47974a` | `#1d5427` / `#246631` | bandes de tonte (12 sur le tracé, débordent hors des lignes) |
+| `edge` | noir vert 38 % | noir 50 % | assombrissement des bords (`radialGradient`, transparent au centre) |
+| `line` | `#ffffff` (92 %) | `#e9f2ea` (80 %) | tracé, épaisseur 3 ; cadre des buts 4 |
+| `net` | blanc 55 % | blanc cassé 45 % | quadrillage des filets |
+| `shadow` | vert sombre 32 % | noir 45 % | ombre portée des cartes (rect décalé de 5, pas de `filter`) |
+| `cardFill` / `cardStroke` | `#ffffff` / encre 10 % | `#0f1b30` / blanc 14 % | carte d'un joueur placé |
+| `pill` / `pillText` | `#eceef1` / `#3b4049` | `#1f2c44` / `#c8d2e6` | pastille de poste |
+| `text` / `muted` | `#101215` / `#5d636e` | `#f4f7ff` / `#9aa6bd` | nom / époque |
+| `emptyFill` / `emptyStroke` / `emptyText` | blanc 16 % / blanc 85 % / `#ffffff` | noir 22 % / blanc cassé 70 % / `#e9f2ea` | slot libre |
+| `accent` | `#da291c` | `#da291c` | slot sélectionné (bordure + pastille) |
+
+Ces clés sont la seule source de couleur du terrain (plus `AVATAR_PALETTE` pour les médaillons).
+
+### Tracé (cotes FIFA)
+
+Le tracé est dessiné à l'échelle d'un terrain de 105 × 68 m sur la hauteur disponible
+(`M = 1320 / 105` unités par mètre, largeur ≈ 855) : surfaces de réparation 40,32 × 16,5 m, surfaces
+de but 18,32 × 5,5 m, points de penalty à 11 m, rond central et arcs de surface de 9,15 m (seule la
+portion hors de la surface est tracée), quarts de cercle de corner de 1 m, buts de 7,32 m vus de
+dessus avec filet. Les coordonnées des slots (`formations.ts`) restent en pourcentage de la largeur
+du SVG : les cartes des latéraux débordent légèrement de la ligne de touche, comme sur un habillage TV.
 
 ## Typographie
 
@@ -84,8 +98,9 @@ prochaine étape (décision prise : en mode clair, le terrain et le PNG passeron
 - Graisses : 400 texte, 500 noms et contrôles, 600 boutons principaux et états actifs, 650 titres.
   Titres à `letter-spacing: -0.01em`. Aucune capitale espacée en « eyebrow ».
 - Chiffres : `font-variant-numeric: tabular-nums` sur la progression, les époques et les schémas.
-- Échelle SVG (unités du viewBox) : `26` nom de joueur · `20` « Libre » · `15` poste et époque ·
-  `26` légende de bas de terrain (letter-spacing 2 px).
+- Échelle SVG (unités du viewBox) : `21` nom de joueur (600) · `20` poste d'un slot libre ·
+  `18` initiales · `15` « Libre » · `14` époque · `13` pastille de poste (700) · `26` légende de bas
+  de terrain (600, letter-spacing 3).
 
 ## Espacement, rayons, largeurs
 
@@ -159,30 +174,35 @@ rendue sous le terrain pour éviter un saut de mise en page.
 
 ### Carte de joueur (SVG, `Pitch.tsx`)
 
-Rect 220 × 72, rayon 14. À gauche, un médaillon d'avatar ; à droite, nom et époque alignés à gauche ;
-poste en haut à droite, aligné à droite.
+Rect 220 × 72, rayon 14, ombre portée simulée (même rect, `shadow`, décalé de 5). À gauche, un
+médaillon d'avatar ; à droite, le nom sur toute la largeur, puis l'époque et la pastille de poste sur
+la seconde ligne.
 
 ```
 ┌────────────────────────────────┐
-│                        LB      │  poste, 15 px, muted, ancré à droite
-│  ╭──╮                          │
-│  │KM│  Kylian Mbappé           │  initiales 18 px (700), nom 21 px (600)
-│  ╰──╯  2017-2024               │  époque 14 px, muted
+│  ╭──╮  Kvaratskhelia           │  initiales 18 px (700), nom 21 px (600)
+│  │KK│                          │
+│  ╰──╯  depuis 2025      ┌──┐   │  époque 14 px, muted
+│                         │LW│   │  pastille 13 px (700), en bas à droite
 └────────────────────────────────┘
 ```
 
-- Médaillon : cercle r=24 centré à 30 unités du bord gauche. Fond = `avatarColor(player.id)`
+- Pourquoi la pastille est en bas : en haut à droite, elle chevauchait les noms longs (mesuré :
+  Donnarumma, Kvaratskhelia, Ibrahimović). L'époque est courte (≤ « depuis 2025 »), la ligne du bas a
+  la place. Vérifier par `getBBox` qu'aucun nom ne touche la pastille après toute retouche.
+- Médaillon : cercle r=24 centré à 32 unités du bord gauche. Fond = `avatarColor(player.id)`
   (déterministe, cf. ci-dessous), initiales = `initials(player.name)` (18 px, 700, sans diacritique :
   « Ángel Di María » → « AM », « Ronaldinho » → « RO »).
 - Palette d'avatar : `AVATAR_PALETTE` dans `lib/avatar.ts` (5 teintes du design system, dont le
   rouge). La couleur est un **hachage de l'id**, jamais un aléatoire : deux exports du même onze
   produisent la même image. Deux joueurs peuvent partager une teinte et des initiales (Maxwell et
   Marquinhos → « MA ») : le nom complet reste la référence.
-- Zone de nom : de +62 à +98 (≈148 unités). Nom le plus long de l'effectif : « Donnarumma » ≈
-  115 unités à 21 px — la marge est réelle mais faible : **ne pas monter au-dessus de 21 px** sans
-  élargir la carte.
-- Slot vide : médaillon en pointillés `6 5` sans initiales, nom « Libre », époque absente.
-- Slot sélectionné : bordure `accent`, épaisseur 4 (au lieu de 2), sur la carte **et** le médaillon.
+- Zone de nom : de +64 au bord droit moins 10 (≈146 unités). Nom affiché le plus long :
+  « Kvaratskhelia » ≈ 135 unités à 21 px — **ne pas monter au-dessus de 21 px** sans élargir la carte.
+- Slot vide : fond `emptyFill`, bordure et médaillon en pointillés (`10 8` et `6 5`), le poste en
+  titre et « Libre » dessous, pas d'ombre.
+- Slot sélectionné : bordure `accent`, épaisseur 4 (au lieu de 2), sur la carte **et** le médaillon ;
+  la pastille de poste passe en `accent`.
 - Zone cliquable : le `<g>` entier, `role="button"`, `tabIndex={0}`, `aria-label` explicite
   (« LB : Maxwell, retirer ou remplacer » / « Choisir un CB »), activation Entrée et Espace.
 - Le nom est **réduit** par `shortName()` (voir `docs/DATA.md`).

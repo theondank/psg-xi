@@ -31,7 +31,8 @@ src/data/players.ts        effectif typé (87 joueurs) + eraLabel() + shortName(
 src/lib/formations.ts      schémas, slots, postes acceptés, coordonnées terrain
 src/lib/squad.ts           LOGIQUE MÉTIER pure : place, clear, éligibilité, adaptLineup
 src/lib/exportPng.ts       SVG → PNG (Blob + canvas), sans dépendance
-src/components/Pitch.tsx   terrain SVG, cartes de joueurs (styles en attributs)
+src/components/Pitch.tsx   terrain SVG aux cotes FIFA, cartes de joueurs (styles en attributs, palette par thème)
+src/hooks/useColorScheme.ts thème de l'OS pour le terrain (le PNG suit le thème)
 src/components/Picker.tsx  sélecteur de joueurs d'un slot (bottom sheet sur mobile)
 src/components/MatchSheet.tsx  feuille de match : slots par ligne, progression
 src/App.tsx                état + orchestration, aucun calcul métier

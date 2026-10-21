@@ -3,6 +3,7 @@ import { Pitch } from './components/Pitch';
 import { Picker } from './components/Picker';
 import { MatchSheet } from './components/MatchSheet';
 import { usePhotos } from './hooks/usePhotos';
+import { useColorScheme } from './hooks/useColorScheme';
 import { FORMATION_IDS, getFormation, type FormationId } from './lib/formations';
 import { exportSvgToPng } from './lib/exportPng';
 import {
@@ -29,6 +30,7 @@ export default function App() {
 
   const formation = getFormation(formationId);
   const photos = usePhotos(lineup);
+  const scheme = useColorScheme();
   const selectedSlot = formation.slots.find((slot) => slot.id === selectedSlotId);
   const filled = filledCount(lineup);
   const complete = isComplete(lineup);
@@ -145,6 +147,7 @@ export default function App() {
             formation={formation}
             lineup={lineup}
             photos={photos}
+            scheme={scheme}
             selectedSlotId={selectedSlotId}
             onSelectSlot={handleSelectSlot}
             svgRef={svgRef}

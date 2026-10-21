@@ -52,8 +52,7 @@ Ce qu'un générateur générique de type « build your XI » ne peut pas revend
 - Non-objectifs : vote en ligne, base de données, données live, contenu généré par LLM au runtime.
 - **Décisions ouvertes** (voir `docs/FEATURES.md`) : notation des joueurs, vraies photos (droits
   d'usage non tranchés), comparaison avec un onze réel.
-- Thème : l'interface suit le thème de l'OS (clair / sombre) ; le terrain et le PNG le suivront aussi
-  (décision du 2026-10-21, mise en œuvre lors de la passe terrain).
+- Thème : l'interface, le terrain et le PNG exporté suivent le thème de l'OS (clair / sombre).
 
 ## Brand Commitments
 

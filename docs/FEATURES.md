@@ -19,7 +19,7 @@
 | F13 | Avatars monogrammes | Chaque carte porte un médaillon : initiales sans diacritique + couleur déterministe issue de l'id ; identique à l'écran et dans le PNG |
 | F14 | Pipeline portraits | Si un joueur a une URL dans `src/data/photos.ts`, son portrait s'affiche dans le médaillon et se retrouve dans le PNG exporté ; en cas d'absence, d'échec réseau ou de CORS refusé, le monogramme reste (aucune image cassée) |
 | F15 | Feuille de match | Au repos, le panneau liste les 11 slots groupés Gardien / Défense / Milieu / Attaque (`slotsByLine`, testé), chaque ligne de gauche à droite |
-| F16 | Thème clair / sombre | L'interface suit `prefers-color-scheme` ; police Geist servie depuis `public/fonts/`, sans appel réseau. Le terrain reste sombre pour l'instant (suivi du thème : prochaine étape) |
+| F16 | Thème clair / sombre | L'interface suit `prefers-color-scheme` ; police Geist servie depuis `public/fonts/`, sans appel réseau. Le terrain suit aussi le thème (pelouse de jour / de nocturne), et le PNG exporté avec lui |
 
 Sauf F14 (portraits chargés à la demande depuis le CDN), rien de tout cela ne dépend du réseau :
 l'app démarre et fonctionne hors ligne après chargement.
@@ -55,7 +55,6 @@ Effort : **S** ≈ moins d'une heure, **M** ≈ une demi-journée, **L** ≈ une
 | Notation des joueurs | Note par poste ? Par siècle ? Par utilisateur ? | C'est une opinion : il faut dire qui note et sur quelle base, sinon l'app invente une vérité |
 | Photos de joueurs | Remplacer le monogramme par de vrais portraits | **Tranché** : CDN API-Sports. Le pipeline est en place (F14) ; il ne manque que la clé api-sports.io pour générer la table des ids (`scripts/fetch-photo-ids.mjs`) |
 | Comparaison avec un onze réel | Confronter la compo à un onze aligné une saison donnée | Demande une source de compositions officielles : périmètre et effort à valider |
-| Terrain en thème clair | Le terrain et le PNG suivent le thème (décision prise le 2026-10-21) | Deux rendus d'export à tester ; traité dans la passe « terrain » |
 
 ## Non-objectifs assumés
 
